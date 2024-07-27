@@ -22,9 +22,7 @@ export default ({ navigation }) => {
   // 데이터를 가져오는 함수
   const fetchData = async () => {
     try {
-      const res = await axios.get(
-        'http://ec2-43-203-224-22.ap-northeast-2.compute.amazonaws.com:8080/oauth2/google/login'
-      );
+      const res = await axios.get(`${BaseURL}/oauth2/google/login`);
       setData(res.data);
     } catch (error) {
       console.error('Error fetching data:', error);
