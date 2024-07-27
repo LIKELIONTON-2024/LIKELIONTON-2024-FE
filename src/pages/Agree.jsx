@@ -66,6 +66,7 @@ const Agree = ({ navigation }) => {
   const { registerForPushNotificationsAsync, errorMsg: notificationErrorMsg } =
     useNotification();
 
+  // notification 권한 허용이 해결되면 모두 허용시로 바뀜
   const allPermissionsGranted =
     (locationAgree && cameraAgree) || notificationAgree;
 
