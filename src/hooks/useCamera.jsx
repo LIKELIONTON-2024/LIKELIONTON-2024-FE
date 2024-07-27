@@ -9,10 +9,10 @@ const useCamera = () => {
   const requestCameraPermissions = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      setErrorMsg('Permission to access camera was denied');
+      setErrorMsg('카메라 접근 권한이 거부되었습니다.');
       Alert.alert(
-        'Permission denied',
-        'Permission to access camera was denied'
+        '허가가 거부되었습니다.',
+        '카메라 접근 권한이 거부되었습니다.'
       );
       return false;
     }
@@ -22,10 +22,10 @@ const useCamera = () => {
   const requestMediaLibraryPermissions = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      setErrorMsg('Permission to access media library was denied');
+      setErrorMsg('미디어 라이브러리에 대한 액세스 권한이 거부되었습니다.');
       Alert.alert(
-        'Permission denied',
-        'Permission to access media library was denied'
+        '허가가 거부되었습니다.',
+        '미디어 라이브러리에 대한 액세스 권한이 거부되었습니다.'
       );
       return false;
     }
@@ -37,10 +37,7 @@ const useCamera = () => {
     const mediaLibraryGranted = await requestMediaLibraryPermissions();
 
     if (cameraGranted && mediaLibraryGranted) {
-      Alert.alert(
-        'Permissions granted',
-        'You have access to camera and media library'
-      );
+      Alert.alert('성공', '카메라 및 앨범에 접근을 허용합니다.');
     }
   };
 

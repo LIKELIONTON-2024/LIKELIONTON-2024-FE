@@ -12,11 +12,8 @@ const useLocation = () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       setPermissionStatus(status);
       if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        Alert.alert(
-          'Permission denied',
-          'Permission to access location was denied'
-        );
+        setErrorMsg('위치에 대한 액세스 권한이 거부되었습니다.');
+        Alert.alert('거부', '위치에 대한 액세스 권한이 거부되었습니다.');
       }
     };
 
@@ -29,8 +26,11 @@ const useLocation = () => {
         let location = await Location.getCurrentPositionAsync({});
         setLocation(location);
       } catch (error) {
-        setErrorMsg('Error getting location');
-        console.error('Error getting location:', error);
+        setErrorMsg(
+          '위치를 가져오는 중에 오류가 발생했습니다.',
+          '인터넷 통신이 원할하지 않습니다.'
+        );
+        console.error('위치를 가져오는 중에 오류가 발생했습니다:', error);
       }
     }
   };
