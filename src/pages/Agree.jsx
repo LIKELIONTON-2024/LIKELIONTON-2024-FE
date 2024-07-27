@@ -67,7 +67,7 @@ const Agree = ({ navigation }) => {
     useNotification();
 
   const allPermissionsGranted =
-    locationAgree && cameraAgree && notificationAgree;
+    (locationAgree && cameraAgree) || notificationAgree;
 
   const onPressNextButton = () => {
     if (allPermissionsGranted) {
