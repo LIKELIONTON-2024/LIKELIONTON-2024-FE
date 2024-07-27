@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Alert,
   Image,
@@ -6,15 +7,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Cat from '../assets/images/defaultCat.png';
 import { COLOR } from '../styles/color';
 import { Button } from '../components/common/button';
-import { useState } from 'react';
 import AgreeModal from '../components/Account/AgreeModal';
 import useLocation from '../hooks/useLocation';
 import place from '../assets/icons/placeIcon.png';
 import camera from '../assets/icons/cameraIcon.png';
 import notification from '../assets/icons/notificationIcon.png';
+import useCamera from '../hooks/useCamera';
 
 const PermissionContent = ({ onPress, image, title, contents }) => {
   return (
@@ -48,21 +48,28 @@ const PermissionContent = ({ onPress, image, title, contents }) => {
 
 export default ({ navigation }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const { location, errorMsg, getLocation } = useLocation();
-
+  const { location, errorMsg: locationErrorMsg, getLocation } = useLocation();
+  const { image, errorMsg: cameraErrorMsg, handlePermissions } = useCamera();
   const onPressNextButton = () => {
     setIsVisible(true);
   };
 
   const onPressLocationButton = async () => {
     await getLocation();
-    if (errorMsg) {
-      Alert.alert('Error', errorMsg);
-    } else {
+    if (locationErrorMsg) {
+      Alert.alert('Error', locationErrorMsg);
+    } else if (location) {
       Alert.alert(
         'Location',
         `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`
       );
+    }
+  };
+
+  const onPressCameraButton = async () => {
+    await handlePermissions();
+    if (cameraErrorMsg) {
+      Alert.alert('Error', cameraErrorMsg);
     }
   };
 
@@ -94,6 +101,7 @@ export default ({ navigation }) => {
           contents={'내 위치를 통해 주변 지역 정보를 찾기 위해 필요해요.'}
         />
         <PermissionContent
+          onPress={onPressCameraButton}
           image={camera}
           title={'카메라'}
           contents={'인증 사진을 찍기 위해 필요해요.'}
