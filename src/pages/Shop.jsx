@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, Image } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BasicHeader from "../components/MyPage/BasicHeader";
 import SnackCount from "../components/MyPage/SnackCount";
-import ShopBottomSheet from "../components/MyPage/ShopBottomSheet";
+import ShopBottomSheet from "../components/MyPage/shopBottomSheet";
 import { COLOR } from "../styles/color";
 
 const Cat = require("../assets/images/defaultCat.png");
