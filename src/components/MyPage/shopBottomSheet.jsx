@@ -1,156 +1,140 @@
-import React, {useRef} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Image,
-} from 'react-native';
-import BottomSheet from '@gorhom/bottom-sheet';
-import {COLOR} from '../../libs/Color';
+import React, { useRef, useState, useCallback } from "react";
+import { View, StyleSheet, Dimensions } from "react-native";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { COLOR } from "../../styles/color";
+import PhotoGrid from "./PhotoGrid";
+import CustomModal from "./CustomModal";
+import BottomSheetHeader from "./BottomSheetHeader";
+
+const { width } = Dimensions.get("window");
 
 const imagesByTab = {
-  눈: [
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-  ],
   털: [
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
+    require("../../assets/images/fur1On.png"),
+    require("../../assets/images/fur2Off.png"),
+    require("../../assets/images/fur3Off.png"),
+    require("../../assets/images/fur4Off.png"),
   ],
   배경: [
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
+    require("../../assets/images/background1On.png"),
+    require("../../assets/images/background2Off.png"),
   ],
   악세사리: [
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
-    require('../../assets/images/defaultCat.png'),
+    require("../../assets/images/defaultCat.png"),
+    require("../../assets/images/defaultCat.png"),
+    require("../../assets/images/defaultCat.png"),
+    require("../../assets/images/defaultCat.png"),
   ],
 };
 
-const ShopBottomSheet = ({snapPoints, activeTab, setActiveTab}) => {
+const unlockedImages = {
+  [require("../../assets/images/fur2Off.png")]: require("../../assets/images/fur2On.png"),
+  [require("../../assets/images/fur3Off.png")]: require("../../assets/images/fur3On.png"),
+  [require("../../assets/images/fur4Off.png")]: require("../../assets/images/fur4On.png"),
+  [require("../../assets/images/background2Off.png")]: require("../../assets/images/background2On.png"),
+};
+
+const ShopBottomSheet = () => {
+  const [activeTab, setActiveTab] = useState("털");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const bottomSheetRef = useRef(null);
 
-  const renderHeader = () => (
-    <View style={styles.headerContainer}>
-      {['눈', '털', '배경', '악세사리'].map(tab => (
-        <TouchableOpacity
-          key={tab}
-          style={styles.tab}
-          onPress={() => setActiveTab(tab)}>
-          <Text
-            style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
-            {tab}
-          </Text>
-          {activeTab === tab && <View style={styles.indicator} />}
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
+  const handleSheetChanges = useCallback((index) => {
+    console.log("handleSheetChanges", index);
+  }, []);
 
-  // 선택된 탭에 따른 이미지 목록
-  const images = imagesByTab[activeTab] || [];
+  const handleImagePress = (image) => {
+    console.log("Image Source:", image);
 
-  const renderItem = ({item}) => (
-    <View style={styles.gridItem}>
-      <Image source={item} style={styles.image} />
-    </View>
-  );
+    if (isImageLocked(image)) {
+      setSelectedImage(getUnlockedImage(image));
+      setIsModalVisible(true);
+    }
+  };
+
+  const isImageLocked = (image) => {
+    return Object.keys(unlockedImages).includes(image.toString());
+  };
+
+  const getUnlockedImage = (lockedImage) => {
+    return unlockedImages[lockedImage] || lockedImage;
+  };
+
+  const getImageStyle = () => {
+    if (activeTab === "배경") {
+      return styles.backgroundImage;
+    }
+    return styles.defaultImage;
+  };
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      snapPoints={snapPoints}
-      handleComponent={() => (
-        <View style={styles.handleContainer}>
-          <View style={styles.handle} />
-          {renderHeader()}
+    <View style={styles.container}>
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={[104, 520]}
+        onChange={handleSheetChanges}
+        handleComponent={() => (
+          <View style={styles.handleContainer}>
+            <View style={styles.handle} />
+            <BottomSheetHeader
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+          </View>
+        )}
+      >
+        <View style={styles.content}>
+          <PhotoGrid
+            images={imagesByTab[activeTab] || []}
+            onImagePress={handleImagePress}
+            getImageStyle={getImageStyle}
+          />
         </View>
-      )}>
-      <View style={styles.content}>
-        <FlatList
-          data={images}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          numColumns={2}
-          contentContainerStyle={styles.grid}
+      </BottomSheet>
+
+      {selectedImage && (
+        <CustomModal
+          visible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          image={selectedImage}
         />
-      </View>
-    </BottomSheet>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "transparent",
+  },
   handleContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    borderTopWidth: 0.5,
+    borderTopColor: COLOR.GRAY_200,
   },
   handle: {
     width: 73,
     height: 5,
     backgroundColor: COLOR.GRAY_200,
     borderRadius: 100,
-    marginVertical: 8,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingTop: 27,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLOR.GRAY_300,
-    backgroundColor: COLOR.WHITE,
-    width: '100%',
-    shadowColor: COLOR.GRAY_400,
-    shadowOffset: {width: 0, height: 8},
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-  },
-  tab: {
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    position: 'relative',
-  },
-  tabText: {
-    fontSize: 16,
-    color: COLOR.GRAY_400,
-  },
-  activeTabText: {
-    color: COLOR.BLUE_400,
-  },
-  indicator: {
-    position: 'absolute',
-    bottom: -4,
-    width: 58,
-    height: 7,
-    backgroundColor: COLOR.BLUE_400,
-    borderRadius: 10,
+    marginTop: 8,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 10,
+    marginHorizontal: 52,
   },
-  grid: {
-    flexGrow: 1,
+  defaultImage: {
+    width: 140,
+    height: 140,
+    resizeMode: "cover",
   },
-  gridItem: {
-    flex: 1,
-    margin: 5,
-    aspectRatio: 1,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+  backgroundImage: {
+    width: 152,
+    height: 270,
+    resizeMode: "cover",
   },
 });
 
