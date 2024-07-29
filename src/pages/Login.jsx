@@ -1,11 +1,5 @@
-import {
-  Alert,
-  Image,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+// todo : 구글 로그인
+import { Linking, SafeAreaView, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Button } from '../components/common/button';
 import axios from 'axios';
@@ -23,11 +17,20 @@ export default ({ navigation }) => {
   // 데이터를 가져오는 함수
   const fetchData = async () => {
     try {
-      const res = await axios.get(`${BaseURL}/oauth2/google/login`);
-      setData(res.data);
-      console.log(res.data);
+      const uri = await axios.get(`${BaseURL}/oauth2/google/login`);
+      setData(uri.data);
+      // navigation.navigate('Agree');
     } catch (error) {
       console.error('Error fetching data:', error);
+    }
+    fetchData();
+  };
+
+  const openAuthUri = () => {
+    if (data) {
+      Linking.openURL(data);
+    } else {
+      console.log('no URL open');
     }
   };
 
@@ -79,7 +82,7 @@ export default ({ navigation }) => {
           text={'네이버로 계속하기'}
         />
         <Button
-          onPress={fetchData}
+          onPress={openAuthUri}
           icon={googleIcon}
           bgColor={COLOR.GRAY_100}
           text={'구글로 계속하기'}
