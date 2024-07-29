@@ -57,7 +57,9 @@ export default () => {
         <FlatList
           data={dummy_data}
           renderItem={renderItem}
-          keyExtractor={(item, index) => `${item}_${index}`}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ paddingBottom: 150 }}
+          showsVerticalScrollIndicator={false}
         />
       </View>
     </View>
