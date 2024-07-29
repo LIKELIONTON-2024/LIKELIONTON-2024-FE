@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -9,100 +10,100 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import axios from 'axios';
 import { COLOR } from '../../styles/color';
 import cat from '../../assets/images/defaultCat.png';
 import plus from '../../assets/icons/plusIcon.png';
 import searchIcon from '../../assets/icons/searchIcon.png';
 import checkIcon from '../../assets/icons/checkIcon.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BaseURL } from '../../apis/api';
 
-const { width, height } = Dimensions.get('screen');
-const dummy_data = [
-  {
-    id: 1,
-    image: cat,
-    nickname: '프론트엔드d',
-    isFriends: true,
-  },
-  {
-    id: 2,
-    image: cat,
-    nickname: '백엔드a',
-    isFriends: false,
-  },
-  {
-    id: 3,
-    image: cat,
-    nickname: '풀스택c',
-    isFriends: true,
-  },
-  {
-    id: 4,
-    image: cat,
-    nickname: '프론트엔드c',
-    isFriends: true,
-  },
-  {
-    id: 5,
-    image: cat,
-    nickname: '백엔드v',
-    isFriends: false,
-  },
-  {
-    id: 6,
-    image: cat,
-    nickname: '풀스택v',
-    isFriends: true,
-  },
-  {
-    id: 7,
-    image: cat,
-    nickname: '프론트엔드a',
-    isFriends: true,
-  },
-  {
-    id: 8,
-    image: cat,
-    nickname: '백엔드a',
-    isFriends: false,
-  },
-  {
-    id: 9,
-    image: cat,
-    nickname: '풀스택s',
-    isFriends: true,
-  },
-];
+const { width } = Dimensions.get('screen');
 
-export default () => {
-  const [searchText, setSearchText] = useState('');
-  const [filteredData, setFilteredData] = useState(dummy_data);
-
-  useEffect(() => {
-    if (searchText === '') {
-      setFilteredData(dummy_data);
-    } else {
-      setFilteredData(
-        dummy_data.filter((item) => item.nickname.includes(searchText))
-      );
+// 친구 요청 보내기 함수
+const sendFriendRequest = async (receiverId) => {
+  try {
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    if (!accessToken) {
+      throw new Error('로그인 정보가 없습니다.');
     }
-  }, [searchText]);
 
-  const renderItem = ({ item }) => {
-    return (
-      <View style={styles.renderItemContainer}>
-        <View style={styles.renderItemProfile}>
-          <Image source={item.image} style={styles.renderItemImage} />
-          <Text style={styles.nickname}>{item.nickname}</Text>
-        </View>
-        <TouchableOpacity>
-          <Image
-            source={item.isFriends ? checkIcon : plus}
-            style={styles.icon}
-          />
-        </TouchableOpacity>
-      </View>
+    await axios.post(
+      `${BaseURL}/friend-request/send?receiverId=${receiverId}`,
+      null, // 요청 본문은 비워두기
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
+
+    Alert.alert('친구 요청이 성공적으로 보내졌습니다.');
+  } catch (error) {
+    Alert.alert('친구 요청 보내기 실패: ' + error.message);
+  }
+};
+
+export default function FriendSearchScreen() {
+  const [searchText, setSearchText] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const fetchFriends = useCallback(async (searchKeyword = '') => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (!accessToken) {
+        setError('로그인 정보가 없습니다.');
+        return;
+      }
+
+      const response = await axios.get(
+        `${BaseURL}/friend/list/search?searchKeyword=${searchKeyword}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      // 응답 데이터에 `isRequested` 필드를 추가했다고 가정
+      setFilteredData(response.data);
+    } catch (err) {
+      setError('데이터를 가져오는 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const onPressSearchButton = () => {
+    fetchFriends(searchText); // 검색 버튼을 눌렀을 때 친구 목록 가져오기
   };
+  // fetchFriends(searchText);
+  const renderItem = ({ item }) => (
+    <View style={styles.renderItemContainer}>
+      <View style={styles.renderItemProfile}>
+        <Image source={item.image || cat} style={styles.renderItemImage} />
+        <Text style={styles.nickname}>{item.nickname}</Text>
+      </View>
+      <TouchableOpacity
+        onPress={() => {
+          if (!item.isRequested) {
+            sendFriendRequest(item.userId); // 친구 요청 보내기
+          }
+        }}
+      >
+        <Image
+          source={item.isRequested ? checkIcon : plus}
+          style={styles.icon}
+        />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -114,24 +115,29 @@ export default () => {
           value={searchText}
           onChangeText={setSearchText}
         />
-        <Image source={searchIcon} style={styles.searchIcon} />
+        <TouchableOpacity
+          onPress={onPressSearchButton}
+          style={styles.searchButton}
+        >
+          <Image source={searchIcon} style={styles.searchIcon} />
+        </TouchableOpacity>
       </View>
-      <View>
-        <FlatList
-          data={filteredData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: 150 }}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
+      {loading && <Text style={styles.loadingText}>로딩 중...</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}
+      <FlatList
+        data={filteredData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.userId.toString()}
+        contentContainerStyle={styles.flatListContentContainer}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  flatList: {
-    paddingBottom: 40,
+  flatListContentContainer: {
+    paddingBottom: 150,
   },
   renderItemContainer: {
     flexDirection: 'row',
@@ -178,11 +184,24 @@ const styles = StyleSheet.create({
     borderColor: COLOR.GRAY_200,
     padding: 10,
   },
-  searchIcon: {
+  searchButton: {
     position: 'absolute',
-    width: 24,
-    height: 24,
     right: 15,
     top: 13,
+  },
+  searchIcon: {
+    width: 24,
+    height: 24,
+  },
+  errorText: {
+    color: 'red',
+    marginVertical: 10,
+    textAlign: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: COLOR.GRAY_500,
+    textAlign: 'center',
+    marginVertical: 20,
   },
 });
