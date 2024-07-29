@@ -55,7 +55,7 @@ const SignUp = ({ navigation }) => {
   const postData = async () => {
     const url = `${BaseURL}/user/join`;
     const data = {
-      email: 'mangsuyo3610@gmail.com',
+      email: 'test@gmail.com',
       nickname,
       zipCode: zipCode,
     };
@@ -141,7 +141,7 @@ const SignUp = ({ navigation }) => {
           {nicknameErrorText && (
             <Text style={styles.errorText}>{nicknameErrorText}</Text>
           )}
-          <Text style={{ fontWeight: 'semibold', fontSize: 17 }}>집 주소</Text>
+          <Text style={{ fontWeight: 'semibold', fontSize: 17 }}>우편번호</Text>
           <View>
             <TextInput
               value={zipCode}

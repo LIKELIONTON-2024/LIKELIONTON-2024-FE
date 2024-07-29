@@ -13,6 +13,7 @@ import kakaoIcon from '../assets/icons/kakaoIcon.png';
 import googleIcon from '../assets/icons/googleIcon.png';
 import naverIcon from '../assets/icons/naverIcon.png';
 import { COLOR } from '../styles/color';
+import { BaseURL } from '../apis/api';
 
 export default ({ navigation }) => {
   const [data, setData] = useState(null);
@@ -24,6 +25,7 @@ export default ({ navigation }) => {
     try {
       const res = await axios.get(`${BaseURL}/oauth2/google/login`);
       setData(res.data);
+      console.log(res.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -71,7 +73,7 @@ export default ({ navigation }) => {
           text={'카카오로 계속하기'}
         />
         <Button
-          onPress={() => {}}
+          onPress={() => navigation.navigate('MainTab')}
           icon={naverIcon}
           bgColor={COLOR.NAVERBUTTON}
           text={'네이버로 계속하기'}
