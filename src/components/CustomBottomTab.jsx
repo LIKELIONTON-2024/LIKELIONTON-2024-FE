@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, { useRef } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -14,9 +14,9 @@ import friendListOff from '../assets/icons/friendListOff.png';
 import friendListOn from '../assets/icons/friendListOn.png';
 import certificationOff from '../assets/icons/certificationOff.png';
 import certificationOn from '../assets/icons/certificationOn.png';
-import {COLOR} from '../styles/color';
+import { COLOR } from '../styles/color';
 
-const CustomBottomTab = ({state, navigation, insets, descriptors}) => {
+const CustomBottomTab = ({ state, navigation, insets, descriptors }) => {
   const tab1Value = useRef(new Animated.Value(0)).current;
   const tab2Value = useRef(new Animated.Value(0)).current;
   const tab3Value = useRef(new Animated.Value(0)).current;
@@ -32,12 +32,14 @@ const CustomBottomTab = ({state, navigation, insets, descriptors}) => {
   };
 
   return (
-    <View style={[styles.bottomTabBarWrapper, {paddingBottom: insets.bottom}]}>
+    <View
+      style={[styles.bottomTabBarWrapper, { paddingBottom: insets.bottom }]}
+    >
       {state.routes.map((route, index) => {
         const label = route.name;
         const isFocused = state.index === index;
 
-        const iconFlag = bool => {
+        const iconFlag = (bool) => {
           switch (label) {
             case 'FriendList':
               return (
@@ -46,16 +48,18 @@ const CustomBottomTab = ({state, navigation, insets, descriptors}) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: 5,
-                  }}>
+                  }}
+                >
                   <Image
                     source={isFocused ? friendListOn : friendListOff}
-                    style={{width: 40, height: 40}}
+                    style={{ width: 40, height: 40 }}
                   />
 
                   <Text
                     style={{
                       color: isFocused ? COLOR.YELLOW_400 : COLOR.GRAY_100,
-                    }}>
+                    }}
+                  >
                     친구 목록
                   </Text>
                 </View>
@@ -67,15 +71,17 @@ const CustomBottomTab = ({state, navigation, insets, descriptors}) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: 5,
-                  }}>
+                  }}
+                >
                   <Image
                     source={isFocused ? certificationOn : certificationOff}
-                    style={{width: 40, height: 40}}
+                    style={{ width: 40, height: 40 }}
                   />
                   <Text
                     style={{
                       color: isFocused ? COLOR.YELLOW_400 : COLOR.GRAY_100,
-                    }}>
+                    }}
+                  >
                     인증하기
                   </Text>
                 </View>
@@ -87,15 +93,17 @@ const CustomBottomTab = ({state, navigation, insets, descriptors}) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: 5,
-                  }}>
+                  }}
+                >
                   <Image
                     source={isFocused ? myPageOn : myPageOff}
-                    style={{width: 40, height: 40}}
+                    style={{ width: 40, height: 40 }}
                   />
                   <Text
                     style={{
                       color: isFocused ? COLOR.YELLOW_400 : COLOR.GRAY_100,
-                    }}>
+                    }}
+                  >
                     마이페이지
                   </Text>
                 </View>
@@ -122,7 +130,8 @@ const CustomBottomTab = ({state, navigation, insets, descriptors}) => {
             key={index}
             activeOpacity={0.7}
             onPress={onPress}
-            style={styles.bottomIconWrapper}>
+            style={styles.bottomIconWrapper}
+          >
             {iconFlag(label)}
           </TouchableOpacity>
         );

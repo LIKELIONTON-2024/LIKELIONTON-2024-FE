@@ -18,6 +18,7 @@ export const COLOR = {
   BLUE: 'blue',
   NAVERBUTTON: '#09CD5E',
   LIGHTGRAY: '#d3d9df',
+  RED: '#FF5454',
 };
 
 export const LIGHT_COLOR = {
