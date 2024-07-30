@@ -41,7 +41,7 @@ const sendFriendRequest = async (receiverId) => {
 
     Alert.alert('친구 요청이 성공적으로 보내졌습니다.');
   } catch (error) {
-    Alert.alert('친구 요청 보내기 실패: ' + error.message);
+    Alert.alert('이미 요청한 친구입니다. ');
   }
 };
 
