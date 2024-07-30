@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
 import Cat from '../assets/images/defaultCat.png';
 import { COLOR } from '../styles/color';
 import { Margin } from '../components/common/Margin';
@@ -16,11 +17,15 @@ import backButton from '../assets/icons/backButtonIcon.png';
 import search from '../assets/icons/searchIcon.png';
 import { BaseURL } from '../apis/api';
 
+// 더미 액세스 토큰 (로그인 시 발급받은 실제 토큰으로 변경)
+const accessToken = 'your_access_token_here';
+
 const SignUp = ({ navigation }) => {
   const [nickname, setNickname] = useState('');
   const [zipCode, setZipCode] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // 닉네임 오류 검증
   const nicknameErrorText = useMemo(() => {
     if (nickname.length === 0) {
       return '닉네임을 입력해주세요.';
@@ -28,73 +33,99 @@ const SignUp = ({ navigation }) => {
     if (nickname.length > 8) {
       return '닉네임은 8자리 이내여야 합니다.';
     }
-    if (/[^a-zA-Z0-9]/.test(nickname)) {
-      return '닉네임은 문자와 숫자만 가능합니다.';
+    // 한국어, 영어, 숫자만 허용
+    if (/[^a-zA-Z0-9가-힣]/.test(nickname)) {
+      return '닉네임은 한글, 영어, 숫자만 가능합니다.';
     }
     return null;
   }, [nickname]);
 
+  // 우편번호 오류 검증
   const zipCodeErrorText = useMemo(() => {
     if (zipCode.length === 0) {
       return '우편번호를 입력해주세요.';
     }
+    // 5자리 숫자 검증
     if (!/^\d{5}$/.test(zipCode)) {
       return '유효한 우편번호를 입력해주세요.';
     }
     return null;
   }, [zipCode]);
 
+  // 닉네임 입력 핸들러
   const onChangeNickname = useCallback((text) => {
     setNickname(text);
   }, []);
 
+  // 우편번호 입력 핸들러
   const onChangeZipCode = useCallback((text) => {
     setZipCode(text);
   }, []);
 
+  // 데이터 전송 함수
   const postData = async () => {
     const url = `${BaseURL}/user/join`;
     const data = {
-      email: 'test@gmail.com',
+      email: 'mangsuyo361@gmail.com',
       nickname,
-      zipCode: zipCode,
+      zipCode,
     };
 
     try {
       const response = await axios.post(url, data, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`, // Bearer 토큰 인증 추가
         },
       });
 
-      console.log('response____', response.data);
+      // 응답 처리
+      if (response.data.isJoined) {
+        // 이미 가입된 경우 홈 화면으로 이동
+        navigation.navigate('MainTab');
+      } else {
+        // 회원가입이 성공한 경우 토큰 저장
+        const { accessToken, refreshToken } = response.data;
+        await AsyncStorage.setItem('accessToken', accessToken);
+        await AsyncStorage.setItem('refreshToken', refreshToken);
+        console.log('토큰이 저장되었습니다.');
+
+        // SplashLogin 화면으로 이동
+        navigation.navigate('SplashLogin');
+      }
     } catch (error) {
-      console.error('Error occurred while sending POST request:', error);
+      if (error.response) {
+        console.error('서버 응답 데이터:', error.response.data);
+        console.error('서버 응답 상태:', error.response.status);
+      } else {
+        console.error('오류 발생:', error.message);
+      }
     }
   };
 
+  // 다음 버튼 활성화 여부 결정
   const nextButtonEnabled = useMemo(() => {
     return nicknameErrorText == null && zipCodeErrorText == null;
   }, [nicknameErrorText, zipCodeErrorText]);
 
+  // 다음 버튼 스타일 결정
   const nextButtonStyle = useMemo(() => {
-    if (nextButtonEnabled) {
-      return styles.nextButton;
-    }
-    return [styles.nextButton, styles.disabledNextButton];
+    return nextButtonEnabled
+      ? styles.nextButton
+      : [styles.nextButton, styles.disabledNextButton];
   }, [nextButtonEnabled]);
 
+  // 다음 버튼 클릭 핸들러
   const onPressNextButton = useCallback(async () => {
     setLoading(true);
     try {
       await postData();
-      navigation.navigate('SplashLogin');
     } catch (error) {
-      console.error('Error navigating to next screen:', error);
+      console.error('다음 화면으로 이동 중 오류 발생:', error);
     } finally {
       setLoading(false);
     }
-  }, [postData, navigation]);
+  }, [postData]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR.WHITE }}>
@@ -125,18 +156,10 @@ const SignUp = ({ navigation }) => {
             value={nickname}
             onChangeText={onChangeNickname}
             autoCapitalize="none"
-            style={{
-              width: 325,
-              height: 47,
-              backgroundColor: COLOR.WHITE,
-              borderWidth: 0.5,
-              borderColor: COLOR.GRAY_200,
-              borderRadius: 12,
-              padding: 10,
-            }}
+            style={styles.textInput}
           />
           <Text style={{ color: COLOR.GRAY_200 }}>
-            8자리 이내, 문자/숫자 가능, 특수문자 입력불가
+            8자리 이내, 한글/영어/숫자 가능, 특수문자 입력불가
           </Text>
           {nicknameErrorText && (
             <Text style={styles.errorText}>{nicknameErrorText}</Text>
@@ -146,26 +169,10 @@ const SignUp = ({ navigation }) => {
             <TextInput
               value={zipCode}
               onChangeText={onChangeZipCode}
-              style={{
-                width: 325,
-                height: 47,
-                backgroundColor: COLOR.WHITE,
-                borderWidth: 0.5,
-                borderColor: COLOR.GRAY_200,
-                borderRadius: 12,
-                padding: 10,
-              }}
+              style={styles.textInput}
             />
-            <TouchableOpacity
-              style={{ position: 'absolute', right: 10, top: 10 }}
-            >
-              <Image
-                source={search}
-                style={{
-                  width: 24,
-                  height: 24,
-                }}
-              />
+            <TouchableOpacity style={styles.searchIconContainer}>
+              <Image source={search} style={styles.searchIcon} />
             </TouchableOpacity>
           </View>
           <Text style={{ color: COLOR.GRAY_200 }}>
@@ -190,6 +197,24 @@ const SignUp = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  textInput: {
+    width: 325,
+    height: 47,
+    backgroundColor: COLOR.WHITE,
+    borderWidth: 0.5,
+    borderColor: COLOR.GRAY_200,
+    borderRadius: 12,
+    padding: 10,
+  },
+  searchIconContainer: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  searchIcon: {
+    width: 24,
+    height: 24,
+  },
   nextButton: {
     width: 325,
     height: 51,

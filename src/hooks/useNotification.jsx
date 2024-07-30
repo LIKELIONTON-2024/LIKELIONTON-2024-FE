@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Alert, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
+const projectId = 'hikikomori';
+
 const useNotification = () => {
   const [notification, setNotification] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -53,7 +55,7 @@ const useNotification = () => {
         return;
       }
 
-      token = (await Notifications.getExpoPushTokenAsync()).data;
+      token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
       setExpoPushToken(token);
       console.log('푸시 알림 토큰:', token);
       setErrorMsg('');

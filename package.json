@@ -36,9 +36,11 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-webview": "13.8.6",
     "typescript": "~5.3.3"
+    "@react-native-async-storage/async-storage": "1.23.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@types/react-native": "^0.72.8"
   },
   "private": true
 }
