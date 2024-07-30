@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
+  Alert,
   Image,
   SafeAreaView,
   StyleSheet,
@@ -24,7 +25,6 @@ const SignUp = ({ navigation }) => {
   const [nickname, setNickname] = useState('');
   const [zipCode, setZipCode] = useState('');
   const [loading, setLoading] = useState(false);
-
   // 닉네임 오류 검증
   const nicknameErrorText = useMemo(() => {
     if (nickname.length === 0) {
@@ -66,7 +66,7 @@ const SignUp = ({ navigation }) => {
   const postData = async () => {
     const url = `${BaseURL}/user/join`;
     const data = {
-      email: 'mangsuyo361@gmail.com',
+      email: 'asdasdasd1@gmail.com',
       nickname,
       zipCode,
     };
@@ -97,6 +97,7 @@ const SignUp = ({ navigation }) => {
       if (error.response) {
         console.error('서버 응답 데이터:', error.response.data);
         console.error('서버 응답 상태:', error.response.status);
+        Alert.alert('유저가 이미 존재합니다.');
       } else {
         console.error('오류 발생:', error.message);
       }
