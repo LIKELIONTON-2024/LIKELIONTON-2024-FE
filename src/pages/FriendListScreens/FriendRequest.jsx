@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -16,6 +17,7 @@ import { BaseURL } from '../../apis/api';
 
 const { width } = Dimensions.get('screen');
 
+// 친구 요청 목록을 가져오는 함수
 const fetchFriendRequests = async (setFriendRequests, setError) => {
   try {
     const accessToken = await AsyncStorage.getItem('accessToken');
@@ -29,38 +31,52 @@ const fetchFriendRequests = async (setFriendRequests, setError) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-
     setFriendRequests(response.data);
   } catch (err) {
     setError('데이터를 가져오는 중 오류가 발생했습니다.');
   }
 };
 
-const handleResponse = async (requestId, action) => {
+// 친구 요청 수락 또는 거절 함수
+const handleResponse = async (userId, action, setFriendRequests, setError) => {
   try {
     const accessToken = await AsyncStorage.getItem('accessToken');
     if (!accessToken) {
       throw new Error('로그인 정보가 없습니다.');
     }
 
-    await axios.post(
-      `${BaseURL}/friend-request/${action}`,
-      { requestId },
-      {
+    const url =
+      action === 'accept'
+        ? `${BaseURL}/friend-request/accept?senderId=${userId}`
+        : `${BaseURL}/friend-request/reject?senderId=${userId}`;
+
+    if (action === 'accept') {
+      await axios.post(
+        url,
+        null, // 요청 본문은 비워두기
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    } else if (action === 'reject') {
+      await axios.delete(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
         },
-      }
-    );
+      });
+    }
 
-    alert(
+    Alert.alert(
       action === 'accept'
         ? '친구 요청을 수락했습니다.'
         : '친구 요청을 거절했습니다.'
     );
+
     // 요청 수락 또는 거절 후 친구 요청 목록을 새로 고침
-    fetchFriendRequests(setFriendRequests, setError);
+    await fetchFriendRequests(setFriendRequests, setError);
   } catch (error) {
     alert('처리 중 오류가 발생했습니다: ' + error.message);
   }
@@ -88,22 +104,30 @@ export default function FriendRequestScreen() {
     </View>
   );
 
+  const onPressAcceptButton = ({ item }) => {
+    handleResponse(item.userId, 'accept', setFriendRequests, setError);
+  };
+
+  const onPressRejectButton = ({ item }) => {
+    handleResponse(item.userId, 'reject', setFriendRequests, setError);
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.renderItemContainer}>
       <View style={styles.renderItemProfile}>
-        <Image source={item.image || cat} style={styles.renderItemImage} />
+        <Image source={item.userImage || cat} style={styles.renderItemImage} />
         <Text style={styles.nickname}>{item.nickname}</Text>
       </View>
       <View style={styles.renderItemButtonSection}>
         <TouchableOpacity
           style={styles.acceptButton}
-          onPress={() => handleResponse(item.id, 'accept')}
+          onPress={onPressAcceptButton({ item })}
         >
           <Text style={styles.acceptButtonText}>수락</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.rejectButton}
-          onPress={() => handleResponse(item.id, 'reject')}
+          onPress={onPressRejectButton({ item })}
         >
           <Text style={styles.rejectButtonText}>거절</Text>
         </TouchableOpacity>
@@ -124,7 +148,7 @@ export default function FriendRequestScreen() {
       <FlatList
         data={friendRequests}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => `${item}_request`}
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={styles.flatListContentContainer}
         showsVerticalScrollIndicator={false}
