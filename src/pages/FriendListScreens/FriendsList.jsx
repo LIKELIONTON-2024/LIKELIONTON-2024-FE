@@ -18,6 +18,13 @@ import FriendDetail from '../../components/Friends/FriendDetail';
 
 const { width } = Dimensions.get('screen');
 
+const dummy_data = [
+  {
+    userId: 1,
+    nickname: '진짜이준영',
+    userImage: cat,
+  },
+];
 export default () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +48,7 @@ export default () => {
             Authorization: `Bearer ${accessToken}`,
           },
         });
+        console.log(res.data);
         setFriends(res.data);
       } catch (err) {
         setError('데이터를 가져오는 중 오류가 발생했습니다.');
@@ -60,12 +68,12 @@ export default () => {
   const renderItem = ({ item }) => (
     <View style={styles.renderItemContainer}>
       <View style={styles.renderItemProfile}>
-        <Image source={item.image || cat} style={styles.renderItemImage} />
+        <Image source={item.userImage || cat} style={styles.renderItemImage} />
         <Text style={styles.nickname}>{item.nickname}</Text>
       </View>
       <View style={styles.rightSection}>
         <Text style={styles.dateTimeText}>1일전</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPressOpenModal}>
           <Image source={arrow} style={styles.icon} />
         </TouchableOpacity>
       </View>
@@ -82,21 +90,17 @@ export default () => {
 
   return (
     <>
-      {/* <View style={styles.container}>
+      <View style={styles.container}>
         <FlatList
-          data={friends}
+          data={dummy_data}
           renderItem={renderItem}
           keyExtractor={(item) => `${item}_friend`}
           ListEmptyComponent={renderEmpty}
           contentContainerStyle={styles.flatListContentContainer}
           showsVerticalScrollIndicator={false}
         />
-      </View> */}
+      </View>
       <FriendDetail isVisible={isVisible} setIsVisible={setIsVisible} />
-
-      <TouchableOpacity onPress={onPressOpenModal}>
-        <Text>모달열기</Text>
-      </TouchableOpacity>
     </>
   );
 };
