@@ -21,35 +21,42 @@ import { BaseURL } from '../../apis/api';
 
 const { width } = Dimensions.get('screen');
 
-// 친구 요청 보내기 함수
-const sendFriendRequest = async (receiverId) => {
-  try {
-    const accessToken = await AsyncStorage.getItem('accessToken');
-    if (!accessToken) {
-      throw new Error('로그인 정보가 없습니다.');
-    }
-
-    await axios.post(
-      `${BaseURL}/friend-request/send?receiverId=${receiverId}`,
-      null, // 요청 본문은 비워두기
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    Alert.alert('친구 요청이 성공적으로 보내졌습니다.');
-  } catch (error) {
-    Alert.alert('이미 요청한 친구입니다. ');
-  }
-};
-
 export default function FriendSearchScreen() {
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [toggleStates, setToggleStates] = useState({});
+
+  // 친구 요청 보내기 함수 userId -> receiverId
+  const sendFriendRequest = async (receiverId) => {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('로그인 정보가 없습니다.');
+      }
+
+      await axios.post(
+        `${BaseURL}/friend-request/send?receiverId=${receiverId}`,
+        null, // 요청 본문은 비워두기
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      // 요청 성공 시 토글 상태 업데이트
+      setToggleStates((prevState) => ({
+        ...prevState,
+        [receiverId]: true,
+      }));
+
+      Alert.alert('친구 요청이 성공적으로 보내졌습니다.');
+    } catch (error) {
+      Alert.alert('이미 요청한 친구입니다.');
+    }
+  };
 
   const fetchFriends = useCallback(async (searchKeyword = '') => {
     setLoading(true);
@@ -61,7 +68,7 @@ export default function FriendSearchScreen() {
         setError('로그인 정보가 없습니다.');
         return;
       }
-
+      // 검색한 키워드가 포함되는 친구 nickname 목록 받아오기
       const response = await axios.get(
         `${BaseURL}/friend/list/search?searchKeyword=${searchKeyword}`,
         {
@@ -70,8 +77,6 @@ export default function FriendSearchScreen() {
           },
         }
       );
-
-      // 응답 데이터에 `isRequested` 필드를 추가했다고 가정
       setFilteredData(response.data);
     } catch (err) {
       setError('데이터를 가져오는 중 오류가 발생했습니다.');
@@ -83,34 +88,36 @@ export default function FriendSearchScreen() {
   const onPressSearchButton = () => {
     fetchFriends(searchText); // 검색 버튼을 눌렀을 때 친구 목록 가져오기
   };
-  // fetchFriends(searchText);
-  const renderItem = ({ item }) => (
-    <View style={styles.renderItemContainer}>
-      <View style={styles.renderItemProfile}>
-        <Image source={item.image || cat} style={styles.renderItemImage} />
-        <Text style={styles.nickname}>{item.nickname}</Text>
-      </View>
-      <TouchableOpacity
-        onPress={() => {
-          if (!item.isRequested) {
+
+  const renderItem = ({ item }) => {
+    const isItemToggled = toggleStates[item.userId] || false;
+    return (
+      <View style={styles.renderItemContainer}>
+        <View style={styles.renderItemProfile}>
+          <Image source={item.image || cat} style={styles.renderItemImage} />
+          <Text style={styles.nickname}>{item.nickname}</Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => {
             sendFriendRequest(item.userId); // 친구 요청 보내기
-          }
-        }}
-      >
-        <Image
-          source={item.isRequested ? checkIcon : plus}
-          style={styles.icon}
-        />
-      </TouchableOpacity>
-    </View>
-  );
+          }}
+          disabled={isItemToggled}
+        >
+          <Image
+            source={isItemToggled ? checkIcon : plus}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.inputSection}>
         <TextInput
           style={styles.textInput}
-          placeholder="닉네임을 입력해주세요."
+          placeholder="찾고 싶은 친구를 검색하세요."
           autoCapitalize="none"
           value={searchText}
           onChangeText={setSearchText}
@@ -127,7 +134,7 @@ export default function FriendSearchScreen() {
       <FlatList
         data={filteredData}
         renderItem={renderItem}
-        keyExtractor={(item) => item.userId.toString()}
+        keyExtractor={(item) => `${item.userId}_friend`}
         contentContainerStyle={styles.flatListContentContainer}
         showsVerticalScrollIndicator={false}
       />
@@ -200,7 +207,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 18,
-    color: COLOR.GRAY_500,
+    color: COLOR.GRAY_400,
     textAlign: 'center',
     marginVertical: 20,
   },
