@@ -18,46 +18,47 @@ import FriendDetail from '../../components/Friends/FriendDetail';
 
 const { width } = Dimensions.get('screen');
 
-const dummy_data = [
-  {
-    userId: 1,
-    nickname: '진짜이준영',
-    userImage: cat,
-  },
-];
 export default () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [refreshing, setRefreshing] = useState(false); // 새로고침 상태 추가
   const [isVisible, setIsVisible] = useState(false);
 
   const onPressOpenModal = () => {
     setIsVisible(true);
   };
-  useEffect(() => {
-    const fetchFriends = async () => {
-      try {
-        const accessToken = await AsyncStorage.getItem('accessToken');
-        if (!accessToken) {
-          setError('로그인 정보가 없습니다.');
-          return;
-        }
 
-        const res = await axios.get(`${BaseURL}/friend/list`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        console.log(res.data);
-        setFriends(res.data);
-      } catch (err) {
-        setError('데이터를 가져오는 중 오류가 발생했습니다.');
-      } finally {
-        setLoading(false);
+  const fetchFriends = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (!accessToken) {
+        setError('로그인 정보가 없습니다.');
+        return;
       }
-    };
+
+      const res = await axios.get(`${BaseURL}/friend/list`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setFriends(res.data);
+    } catch (err) {
+      setError('데이터를 가져오는 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false); // 새로고침 상태 종료
+    }
+  };
+
+  useEffect(() => {
     fetchFriends();
   }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchFriends();
+  };
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
@@ -68,7 +69,10 @@ export default () => {
   const renderItem = ({ item }) => (
     <View style={styles.renderItemContainer}>
       <View style={styles.renderItemProfile}>
-        <Image source={item.userImage || cat} style={styles.renderItemImage} />
+        <Image
+          source={{ uri: item.userImage }}
+          style={styles.renderItemImage}
+        />
         <Text style={styles.nickname}>{item.nickname}</Text>
       </View>
       <View style={styles.rightSection}>
@@ -92,12 +96,14 @@ export default () => {
     <>
       <View style={styles.container}>
         <FlatList
-          data={dummy_data}
+          data={friends}
           renderItem={renderItem}
           keyExtractor={(item) => `${item}_friend`}
           ListEmptyComponent={renderEmpty}
           contentContainerStyle={styles.flatListContentContainer}
           showsVerticalScrollIndicator={false}
+          refreshing={refreshing} // 새로고침 상태 전달
+          onRefresh={onRefresh} // 새로고침 함수 연결
         />
       </View>
       <FriendDetail isVisible={isVisible} setIsVisible={setIsVisible} />
