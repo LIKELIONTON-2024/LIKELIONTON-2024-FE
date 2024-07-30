@@ -14,6 +14,7 @@ import { BaseURL } from '../../apis/api';
 import { COLOR } from '../../styles/color';
 import cat from '../../assets/images/defaultCat.png';
 import arrow from '../../assets/icons/arrowRightIcon.png';
+import FriendDetail from '../../components/Friends/FriendDetail';
 
 const { width } = Dimensions.get('screen');
 
@@ -21,7 +22,11 @@ export default () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
 
+  const onPressOpenModal = () => {
+    setIsVisible(true);
+  };
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -76,16 +81,23 @@ export default () => {
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={friends}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        ListEmptyComponent={renderEmpty}
-        contentContainerStyle={styles.flatListContentContainer}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
+    <>
+      {/* <View style={styles.container}>
+        <FlatList
+          data={friends}
+          renderItem={renderItem}
+          keyExtractor={(item) => `${item}_friend`}
+          ListEmptyComponent={renderEmpty}
+          contentContainerStyle={styles.flatListContentContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      </View> */}
+      <FriendDetail isVisible={isVisible} setIsVisible={setIsVisible} />
+
+      <TouchableOpacity onPress={onPressOpenModal}>
+        <Text>모달열기</Text>
+      </TouchableOpacity>
+    </>
   );
 };
 
