@@ -86,6 +86,7 @@ export default function FriendRequestScreen() {
   const [friendRequests, setFriendRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadFriendRequests = useCallback(async () => {
     setLoading(true);
@@ -98,19 +99,23 @@ export default function FriendRequestScreen() {
     loadFriendRequests();
   }, [loadFriendRequests]);
 
+  const onPressAcceptButton = ({ item }) => {
+    handleResponse(item.userId, 'accept', setFriendRequests, setError);
+  };
+  const onPressRejectButton = ({ item }) => {
+    handleResponse(item.userId, 'reject', setFriendRequests, setError);
+  };
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchFriendRequests(setFriendRequests, setError);
+    setRefreshing(false);
+  }, []);
+
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyText}>요청이 없어요..</Text>
     </View>
   );
-
-  const onPressAcceptButton = ({ item }) => {
-    handleResponse(item.userId, 'accept', setFriendRequests, setError);
-  };
-
-  const onPressRejectButton = ({ item }) => {
-    handleResponse(item.userId, 'reject', setFriendRequests, setError);
-  };
 
   const renderItem = ({ item }) => (
     <View style={styles.renderItemContainer}>
@@ -121,13 +126,13 @@ export default function FriendRequestScreen() {
       <View style={styles.renderItemButtonSection}>
         <TouchableOpacity
           style={styles.acceptButton}
-          onPress={onPressAcceptButton({ item })}
+          onPress={() => onPressAcceptButton(item)}
         >
           <Text style={styles.acceptButtonText}>수락</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.rejectButton}
-          onPress={onPressRejectButton({ item })}
+          onPress={() => onPressRejectButton(item)}
         >
           <Text style={styles.rejectButtonText}>거절</Text>
         </TouchableOpacity>
@@ -148,10 +153,12 @@ export default function FriendRequestScreen() {
       <FlatList
         data={friendRequests}
         renderItem={renderItem}
-        keyExtractor={(item) => `${item}_request`}
+        keyExtractor={(item) => `${item.userId}_request`}
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={styles.flatListContentContainer}
         showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
       />
     </View>
   );
@@ -231,7 +238,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 18,
-    color: COLOR.GRAY_500,
+    color: COLOR.GRAY_400,
     textAlign: 'center',
     marginVertical: 20,
   },
