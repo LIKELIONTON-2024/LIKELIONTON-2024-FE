@@ -120,19 +120,22 @@ export default function FriendRequestScreen() {
   const renderItem = ({ item }) => (
     <View style={styles.renderItemContainer}>
       <View style={styles.renderItemProfile}>
-        <Image source={item.userImage || cat} style={styles.renderItemImage} />
+        <Image
+          source={{ uri: item.userImage }}
+          style={styles.renderItemImage}
+        />
         <Text style={styles.nickname}>{item.nickname}</Text>
       </View>
       <View style={styles.renderItemButtonSection}>
         <TouchableOpacity
           style={styles.acceptButton}
-          onPress={() => onPressAcceptButton(item)}
+          onPress={() => onPressAcceptButton({ item })}
         >
           <Text style={styles.acceptButtonText}>수락</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.rejectButton}
-          onPress={() => onPressRejectButton(item)}
+          onPress={() => onPressRejectButton({ item })}
         >
           <Text style={styles.rejectButtonText}>거절</Text>
         </TouchableOpacity>
