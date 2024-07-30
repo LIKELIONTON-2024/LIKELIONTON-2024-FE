@@ -94,7 +94,7 @@ export default function FriendSearchScreen() {
     return (
       <View style={styles.renderItemContainer}>
         <View style={styles.renderItemProfile}>
-          <Image source={item.image || cat} style={styles.renderItemImage} />
+          <Image source={{ uri: item.image }} style={styles.renderItemImage} />
           <Text style={styles.nickname}>{item.nickname}</Text>
         </View>
         <TouchableOpacity
