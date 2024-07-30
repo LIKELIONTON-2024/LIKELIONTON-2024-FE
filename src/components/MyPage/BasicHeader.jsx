@@ -13,7 +13,7 @@ const BasicHeader = ({ title, toScreen }) => {
         onPress={() => navigation.navigate(toScreen)}
         style={styles.backButton}
       >
-        <Image source={GoBack} />
+        <Image source={GoBack} style={styles.goBackImage} />
       </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
     </View>
@@ -31,6 +31,10 @@ const styles = StyleSheet.create({
   backButton: {
     position: "absolute",
     left: 14,
+  },
+  goBackImage: {
+    height: 29,
+    width: 29,
   },
   title: {
     fontSize: 20,
