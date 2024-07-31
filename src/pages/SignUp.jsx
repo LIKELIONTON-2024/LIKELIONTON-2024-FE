@@ -19,7 +19,7 @@ import search from "../assets/icons/searchIcon.png";
 import { BaseURL } from "../apis/api";
 
 // 더미 액세스 토큰 (로그인 시 발급받은 실제 토큰으로 변경)
-const accessToken = "your_access_token_here";
+const accessToken = 'google_login_accessToken';
 
 const SignUp = ({ navigation }) => {
   const [nickname, setNickname] = useState("");

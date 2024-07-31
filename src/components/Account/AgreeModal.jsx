@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   Keyboard,
