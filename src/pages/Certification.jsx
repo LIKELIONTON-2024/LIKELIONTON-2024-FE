@@ -1,75 +1,85 @@
-import { WebView } from "react-native-webview";
-import { StyleSheet, View } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
+import WebView from "react-native-webview";
 import * as Location from "expo-location";
+import { COLOR } from "../styles/color";
 
 export default function App() {
   const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const webViewRef = useRef(null);
 
   useEffect(() => {
-    let subscription;
+    let locationWatchSubscription = null;
 
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      subscription = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.High,
-          timeInterval: 10000,
-          distanceInterval: 10,
-        },
-        (newLocation) => {
-          setLocation(newLocation);
+      try {
+        // 위치 권한 요청
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Permission to access location was denied");
+          return;
         }
-      );
+
+        // 현재 위치 가져오기
+        let { coords } = await Location.getCurrentPositionAsync({});
+        setLocation(coords);
+        // 위치 정보를 웹뷰로 전송
+        if (webViewRef.current) {
+          webViewRef.current.postMessage(
+            JSON.stringify({
+              type: "LOCATION_UPDATE",
+              data: coords,
+            })
+          );
+        }
+
+        // 실시간 위치 업데이트 구독
+        locationWatchSubscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.High,
+            timeInterval: 5000, // 5초마다 업데이트
+            distanceInterval: 10, // 10미터마다 업데이트
+          },
+          (newLocation) => {
+            setLocation(newLocation.coords);
+            if (webViewRef.current) {
+              webViewRef.current.postMessage(
+                JSON.stringify({
+                  type: "LOCATION_UPDATE",
+                  data: newLocation.coords,
+                })
+              );
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error getting location:", error);
+      }
     })();
 
+    // 컴포넌트 언마운트 시 위치 구독 해제
     return () => {
-      if (subscription) {
-        subscription.remove();
+      if (locationWatchSubscription) {
+        locationWatchSubscription.remove();
       }
     };
   }, []);
 
-  const injectedJavaScript = location
-    ? `window.postMessage(JSON.stringify({
-        action: "update_location",
-        latitude: ${location.coords.latitude},
-        longitude: ${location.coords.longitude}
-      }), "*"); true;`
-    : "";
-
-  const handleMessage = (event) => {
-    console.log("Received message from webview:", event.nativeEvent.data);
-
-    try {
-      const data = JSON.parse(event.nativeEvent.data);
-
-      if (data.action === "location_received") {
-        if (data.status === "success") {
-          console.log("Location data successfully received by web page.");
-        } else {
-          console.error("Failed to receive location data on web page.");
-        }
-      }
-    } catch (e) {
-      console.error("Failed to parse message data:", e);
-    }
-  };
-
   return (
     <View style={styles.container}>
-      <WebView
-        style={styles.mapContainer}
-        source={{ uri: "https://kakaomap-vercel.vercel.app/" }}
-        injectedJavaScript={injectedJavaScript}
-        onMessage={handleMessage}
-      />
+      {location ? (
+        <WebView
+          ref={webViewRef}
+          source={{ uri: "https://kakaomap-vercel.vercel.app/" }}
+          style={styles.webView}
+          onMessage={(event) =>
+            console.log("Message from WebView:", event.nativeEvent.data)
+          }
+          startInLoadingState={true}
+        />
+      ) : (
+        <ActivityIndicator style={styles.loader} />
+      )}
     </View>
   );
 }
@@ -77,10 +87,15 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLOR.WHITE,
   },
-  mapContainer: {
+  loader: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  webView: {
+    width: "100%",
     marginTop: 54,
   },
 });
