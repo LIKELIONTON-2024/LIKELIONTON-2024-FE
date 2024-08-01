@@ -1,76 +1,100 @@
 import React from "react";
 import {
+  Modal,
   View,
   Text,
   TouchableOpacity,
   Image,
-  Modal,
   StyleSheet,
-  Dimensions,
 } from "react-native";
 import { COLOR } from "../../styles/color";
+import SaleSnack from "../../components/MyPage/SaleSnack.jsx";
 
-const { width } = Dimensions.get("window");
-
-const CustomModal = ({ visible, onClose, image }) => (
-  <Modal transparent={true} visible={visible} onRequestClose={onClose}>
-    <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        <TouchableOpacity style={styles.modalCancelButton} onPress={onClose}>
-          <Image
-            source={require("../../assets/icons/cancleIcon.png")}
-            style={styles.modalCancelIcon}
-          />
-        </TouchableOpacity>
-        <Image source={image} style={styles.modalImage} />
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeButtonText}>구매하기</Text>
-        </TouchableOpacity>
+const CustomModal = ({ visible, onClose, onPurchase, image, koreanName }) => {
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Image
+              source={require("../../assets/icons/cancleIcon.png")}
+              style={styles.cancelIcon}
+            />
+          </TouchableOpacity>
+          <View style={styles.modalBody}>
+            <Image source={image} style={styles.image} />
+            <Text style={styles.modalTitle}>{koreanName}</Text>
+            <SaleSnack />
+            <TouchableOpacity
+              style={styles.purchaseButton}
+              onPress={onPurchase}
+            >
+              <Text style={styles.purchaseText}>구매하기</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: width - 40,
+    width: 295,
+    height: 436,
     padding: 20,
     backgroundColor: COLOR.WHITE,
-    borderRadius: 10,
-    alignItems: "center",
+    borderRadius: 30,
     position: "relative",
-  },
-  modalImage: {
-    width: "100%",
-    height: 182,
-    resizeMode: "contain",
-  },
-  modalCancelButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    padding: 5,
-    zIndex: 10,
-  },
-  modalCancelIcon: {
-    width: 24,
-    height: 24,
+    alignItems: "center",
+    justifyContent: "center",
   },
   closeButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: COLOR.BLUE_400,
-    borderRadius: 5,
+    position: "absolute",
+    top: 20,
+    right: 20,
   },
-  closeButtonText: {
+  cancelIcon: {
+    width: 34,
+    height: 34,
+  },
+  modalBody: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  image: {
+    width: 182,
+    height: 182,
+    marginBottom: 11,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  purchaseButton: {
+    width: 229,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 43,
+    borderRadius: 12,
+    backgroundColor: COLOR.BLUE_400,
+  },
+  purchaseText: {
+    fontSize: 17,
     color: COLOR.WHITE,
-    fontSize: 16,
   },
 });
 

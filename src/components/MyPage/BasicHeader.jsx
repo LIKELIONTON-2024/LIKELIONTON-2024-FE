@@ -23,10 +23,10 @@ const BasicHeader = ({ title, toScreen }) => {
 const styles = StyleSheet.create({
   header: {
     height: 55,
-    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+    backgroundColor: "transparent",
   },
   backButton: {
     position: "absolute",
