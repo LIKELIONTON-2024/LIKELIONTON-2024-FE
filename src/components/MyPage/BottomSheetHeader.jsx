@@ -7,10 +7,6 @@ const BottomSheetHeader = ({ activeTab, onTabChange }) => (
     {[
       { tab: "털", icon: require("../../assets/icons/furIcon.png") },
       { tab: "배경", icon: require("../../assets/icons/backgroundIcon.png") },
-      {
-        tab: "악세사리",
-        icon: require("../../assets/icons/accessoriesIcon.png"),
-      },
     ].map(({ tab, icon }) => (
       <TouchableOpacity
         key={tab}

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { COLOR } from "../../styles/color";
 import PhotoGrid from "./PhotoGrid";
@@ -8,36 +8,55 @@ import BottomSheetHeader from "./BottomSheetHeader";
 
 const { width } = Dimensions.get("window");
 
-const imagesByTab = {
+const imageList = {
   털: [
-    require("../../assets/images/fur1On.png"),
-    require("../../assets/images/fur2Off.png"),
-    require("../../assets/images/fur3Off.png"),
-    require("../../assets/images/fur4Off.png"),
+    {
+      name: "fur1.png",
+      uri: require("../../assets/images/fur1.png"),
+      koreanName: "갈색냥이",
+    },
+    {
+      name: "fur2.png",
+      uri: require("../../assets/images/fur2.png"),
+      koreanName: "검정냥이",
+    },
+    {
+      name: "fur3.png",
+      uri: require("../../assets/images/fur3.png"),
+      koreanName: "회색냥이",
+    },
+    {
+      name: "fur4.png",
+      uri: require("../../assets/images/fur4.png"),
+      koreanName: "흰색냥이",
+    },
   ],
   배경: [
-    require("../../assets/images/background1On.png"),
-    require("../../assets/images/background2Off.png"),
-  ],
-  악세사리: [
-    require("../../assets/images/defaultCat.png"),
-    require("../../assets/images/defaultCat.png"),
-    require("../../assets/images/defaultCat.png"),
-    require("../../assets/images/defaultCat.png"),
+    {
+      name: "background1.png",
+      uri: require("../../assets/images/background1.png"),
+      koreanName: "하얀",
+    },
+    {
+      name: "background2.png",
+      uri: require("../../assets/images/background2.png"),
+      koreanName: "풀밭",
+    },
   ],
 };
 
-const unlockedImages = {
-  [require("../../assets/images/fur2Off.png")]: require("../../assets/images/fur2On.png"),
-  [require("../../assets/images/fur3Off.png")]: require("../../assets/images/fur3On.png"),
-  [require("../../assets/images/fur4Off.png")]: require("../../assets/images/fur4On.png"),
-  [require("../../assets/images/background2Off.png")]: require("../../assets/images/background2On.png"),
-};
-
-const ShopBottomSheet = () => {
+const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
   const [activeTab, setActiveTab] = useState("털");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [lockedImages, setLockedImages] = useState({
+    "fur1.png": false,
+    "fur2.png": true,
+    "fur3.png": true,
+    "fur4.png": true,
+    "background1.png": false,
+    "background2.png": true,
+  });
   const bottomSheetRef = useRef(null);
 
   const handleSheetChanges = useCallback((index) => {
@@ -45,20 +64,29 @@ const ShopBottomSheet = () => {
   }, []);
 
   const handleImagePress = (image) => {
-    console.log("Image Source:", image);
-
-    if (isImageLocked(image)) {
-      setSelectedImage(getUnlockedImage(image));
+    if (lockedImages[image.name]) {
+      setSelectedImage(image);
       setIsModalVisible(true);
+    } else {
+      if (activeTab === "배경") {
+        // 배경 탭에서 클릭한 경우
+        onBackgroundSelect(image.uri);
+      } else {
+        // 기타 탭에서 클릭한 경우
+        onImageSelect(image.uri);
+      }
     }
   };
 
-  const isImageLocked = (image) => {
-    return Object.keys(unlockedImages).includes(image.toString());
-  };
-
-  const getUnlockedImage = (lockedImage) => {
-    return unlockedImages[lockedImage] || lockedImage;
+  const handlePurchase = () => {
+    if (selectedImage) {
+      setLockedImages((prevLockedImages) => ({
+        ...prevLockedImages,
+        [selectedImage.name]: false,
+      }));
+      setIsModalVisible(false);
+      setSelectedImage(null);
+    }
   };
 
   const getImageStyle = () => {
@@ -85,11 +113,15 @@ const ShopBottomSheet = () => {
         )}
       >
         <View style={styles.content}>
-          <PhotoGrid
-            images={imagesByTab[activeTab] || []}
-            onImagePress={handleImagePress}
-            getImageStyle={getImageStyle}
-          />
+          <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            <PhotoGrid
+              images={imageList[activeTab] || []}
+              onImagePress={handleImagePress}
+              getImageStyle={getImageStyle}
+              lockedImages={lockedImages}
+              type={activeTab}
+            />
+          </ScrollView>
         </View>
       </BottomSheet>
 
@@ -97,7 +129,9 @@ const ShopBottomSheet = () => {
         <CustomModal
           visible={isModalVisible}
           onClose={() => setIsModalVisible(false)}
-          image={selectedImage}
+          onPurchase={handlePurchase}
+          image={selectedImage.uri}
+          koreanName={selectedImage.koreanName}
         />
       )}
     </View>
@@ -124,7 +158,14 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    marginHorizontal: 52,
+    marginHorizontal: 44,
+  },
+  scrollViewContent: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 4,
+    marginRight: 4,
   },
   defaultImage: {
     width: 140,
@@ -132,7 +173,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   backgroundImage: {
-    width: 152,
+    width: 148,
     height: 270,
     resizeMode: "cover",
   },
