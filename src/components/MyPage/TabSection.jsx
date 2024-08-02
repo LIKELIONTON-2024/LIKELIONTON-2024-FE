@@ -19,7 +19,7 @@ const BagIcon = require("../../assets/icons/bagIcon.png");
 
 const IndicatorImage = require("../../assets/images/indicator.png");
 
-const TabSection = () => {
+const TabSection = ({ data }) => {
   const navigation = useNavigation();
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
@@ -37,12 +37,18 @@ const TabSection = () => {
     }
   };
 
-  const renderScene = SceneMap({
-    calendar: CalendarScreen,
-    activities: ActivitiesScreen,
-    shop: () => null,
-    // inventory: InventoryScreen,
-  });
+  const renderScene = ({ route }) => {
+    switch (route.key) {
+      case "calendar":
+        return <CalendarScreen data={data} />;
+      case "activities":
+        return <ActivitiesScreen data={data} />;
+      case "shop":
+        return null;
+      default:
+        return null;
+    }
+  };
 
   const renderTabBar = (props) => {
     const { navigationState } = props;
@@ -81,7 +87,6 @@ const TabSection = () => {
         initialLayout={{ width: layout.width }}
         renderTabBar={renderTabBar}
       />
-      <Text> tab section</Text>
     </View>
   );
 };

@@ -60,7 +60,7 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
   const bottomSheetRef = useRef(null);
 
   const handleSheetChanges = useCallback((index) => {
-    console.log("handleSheetChanges", index);
+    console.log("BottomSheet index:", index);
   }, []);
 
   const handleImagePress = (image) => {
@@ -69,10 +69,8 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
       setIsModalVisible(true);
     } else {
       if (activeTab === "배경") {
-        // 배경 탭에서 클릭한 경우
         onBackgroundSelect(image.uri);
       } else {
-        // 기타 탭에서 클릭한 경우
         onImageSelect(image.uri);
       }
     }
@@ -90,10 +88,7 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
   };
 
   const getImageStyle = () => {
-    if (activeTab === "배경") {
-      return styles.backgroundImage;
-    }
-    return styles.defaultImage;
+    return activeTab === "배경" ? styles.backgroundImage : styles.defaultImage;
   };
 
   return (

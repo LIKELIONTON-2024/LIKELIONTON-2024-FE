@@ -3,17 +3,17 @@ import { View, StyleSheet, SafeAreaView } from "react-native";
 import BasicHeader from "../components/MyPage/BasicHeader";
 import SettingProfile from "../components/MyPage/SettingProfile";
 import DetailArrow from "../components/MyPage/DetailArrow";
-
 import { COLOR } from "../styles/color";
 
-const ProfileImg = require("../assets/images/defaultCat.png");
+const Setting = ({ route, navigation }) => {
+  // Extract nickname from route params
+  const { nickname } = route.params || {};
 
-const Setting = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.background}>
         <BasicHeader title={"설정"} toScreen={"MyPage"} />
-        <SettingProfile />
+        <SettingProfile nickname={nickname} />
         <View style={styles.gap}>
           <DetailArrow title={"이용 약관"} toScreen={"MyPage"} />
           <DetailArrow title={"개인 정보 처리 방침"} toScreen={"MyPage"} />

@@ -7,15 +7,16 @@ import { COLOR } from "../../styles/color";
 const ProfileImg = require("../../assets/images/defaultCat.png");
 const DetailArrow = require("../../assets/icons/detailArrow.png");
 
-const SettingProfile = () => {
+const SettingProfile = ({ nickname }) => {
   const navigation = useNavigation();
+
   return (
     <View style={styles.profileContainer}>
       <View style={styles.profileImgContainer}>
         <Image source={ProfileImg} style={styles.profileImg} />
       </View>
       <View style={styles.profileTextContainer}>
-        <Text style={styles.userName}>독수리 오형제</Text>
+        <Text style={styles.userName}>{nickname}</Text>
         <Text style={styles.edit}>내 프로필 수정하기</Text>
       </View>
       <TouchableOpacity onPress={() => navigation.navigate("MyPage")}>

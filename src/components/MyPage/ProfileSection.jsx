@@ -2,12 +2,20 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { COLOR } from "../../styles/color";
 
-const ProfileImg = require("../../assets/images/defaultCat.png");
+const mockData = {
+  inventoryImage:
+    "https://likelion-hikikomori.s3.ap-northeast-2.amazonaws.com/inventory-default.png",
+  inventoryBackgroundImage:
+    "https://likelion-hikikomori.s3.ap-northeast-2.amazonaws.com/default.png",
+};
 
-const ProfileSection = () => (
+const ProfileSection = ({ nickname }) => (
   <View style={styles.profileImgContainer}>
-    <Image source={ProfileImg} style={styles.profileImg} />
-    <Text style={styles.userName}>독수리오형제</Text>
+    <Image
+      source={{ uri: mockData.inventoryImage }}
+      style={styles.profileImg}
+    />
+    <Text style={styles.userName}>{nickname}</Text>
   </View>
 );
 

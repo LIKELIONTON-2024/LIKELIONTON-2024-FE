@@ -12,6 +12,7 @@ import Agree from "./pages/Agree";
 import SplashLogin from "./pages/SplashLogin";
 import Shop from "./pages/Shop";
 import Setting from "./pages/Setting";
+import VerifyComplete from "./pages/VerifyComplete";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -62,6 +63,7 @@ const Router = () => {
       <Stack.Screen name="SplashLogin" component={SplashLogin} />
       <Stack.Screen name="ShopStack" component={ShopStackNavigator} />
       <Stack.Screen name="SettingStack" component={SettingStackNavigator} />
+      <Stack.Screen name="VerifyComplete" component={VerifyComplete} />
     </Stack.Navigator>
   );
 };

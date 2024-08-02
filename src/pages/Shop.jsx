@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,10 +14,18 @@ import ShopBottomSheet from "../components/MyPage/shopBottomSheet";
 import { COLOR } from "../styles/color";
 
 const { width, height } = Dimensions.get("window");
-const Cat = require("../assets/images/defaultCat.png");
+
+const mockData = {
+  inventoryImage:
+    "https://likelion-hikikomori.s3.ap-northeast-2.amazonaws.com/inventory-default.png",
+  inventoryBackgroundImage:
+    "https://likelion-hikikomori.s3.ap-northeast-2.amazonaws.com/default.png",
+};
 
 const Shop = ({ navigation }) => {
-  const [selectedImage, setSelectedImage] = useState(Cat);
+  const [selectedImage, setSelectedImage] = useState({
+    uri: mockData.inventoryImage,
+  });
   const [backgroundImage, setBackgroundImage] = useState(null);
 
   const handleImageSelect = useCallback((image) => {
@@ -26,6 +34,10 @@ const Shop = ({ navigation }) => {
 
   const handleBackgroundSelect = useCallback((image) => {
     setBackgroundImage(image);
+  }, []);
+
+  useEffect(() => {
+    setSelectedImage({ uri: mockData.inventoryImage });
   }, []);
 
   return (
