@@ -12,7 +12,7 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLOR } from '../../styles/color';
-import cat from '../../assets/images/defaultCat.png';
+import cat from '../../assets/images/sadCat.png';
 import { BaseURL } from '../../apis/api';
 
 const { width } = Dimensions.get('screen');
@@ -113,7 +113,13 @@ export default function FriendRequestScreen() {
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>요청이 없어요..</Text>
+      <Image source={cat} style={{ width: 167, height: 167 }} />
+      <View style={{ alignItems: 'center' }}>
+        <Text style={styles.emptyText}>친구 요청이 없어요;ㅅ;</Text>
+        <Text style={styles.emptyText}>
+          프로필을 꾸며서 친구를 만들어 보세요!
+        </Text>
+      </View>
     </View>
   );
 
@@ -234,9 +240,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 100,
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: 17,
+    fontWeight: 'regular',
     color: COLOR.GRAY_400,
   },
   loadingText: {

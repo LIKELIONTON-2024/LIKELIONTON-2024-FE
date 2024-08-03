@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BaseURL } from '../../apis/api';
 import { COLOR } from '../../styles/color';
-import cat from '../../assets/images/defaultCat.png';
+import cat from '../../assets/images/sadCat.png';
 import arrow from '../../assets/icons/arrowRightIcon.png';
 import FriendDetail from '../../components/Friends/FriendDetail';
 
@@ -61,7 +61,11 @@ export default () => {
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>친구가 없어요..</Text>
+      <Image source={cat} style={{ width: 167, height: 167 }} />
+      <View style={{ alignItems: 'center' }}>
+        <Text style={styles.emptyText}>아직 친구 목록에 아무도 없어요;ㅅ;</Text>
+        <Text style={styles.emptyText}>친구를 추가해서 함께 즐겨 보세요!</Text>
+      </View>
     </View>
   );
 
@@ -175,10 +179,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 100,
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: 17,
+    fontWeight: 'regular',
     color: COLOR.GRAY_400,
   },
   rightSection: {
