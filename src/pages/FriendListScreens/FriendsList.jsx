@@ -24,10 +24,9 @@ export default () => {
   const [error, setError] = useState('');
   const [refreshing, setRefreshing] = useState(false); // 새로고침 상태 추가
   const [isVisible, setIsVisible] = useState(false);
-
-  const onPressOpenModal = () => {
-    setIsVisible(true);
-  };
+  const [friendId, setFirendId] = useState('');
+  const [firendName, setFriendName] = useState('');
+  const [lastTime, setLastTime] = useState(new Date());
 
   const fetchFriends = async () => {
     try {
@@ -66,8 +65,14 @@ export default () => {
     </View>
   );
 
+  const onPressOpenModal = ({ item }) => {
+    setFirendId(item.userId);
+    setFriendName(item.nickname);
+    setIsVisible(true);
+  };
+
   const renderItem = ({ item }) => (
-    <View style={styles.renderItemContainer}>
+    <View key={item.userId} style={styles.renderItemContainer}>
       <View style={styles.renderItemProfile}>
         <Image
           source={{ uri: item.userImage }}
@@ -77,7 +82,11 @@ export default () => {
       </View>
       <View style={styles.rightSection}>
         <Text style={styles.dateTimeText}>1일전</Text>
-        <TouchableOpacity onPress={onPressOpenModal}>
+        <TouchableOpacity
+          onPress={() => {
+            onPressOpenModal({ item });
+          }}
+        >
           <Image source={arrow} style={styles.icon} />
         </TouchableOpacity>
       </View>
@@ -98,7 +107,7 @@ export default () => {
         <FlatList
           data={friends}
           renderItem={renderItem}
-          keyExtractor={(item) => `${item}_friend`}
+          keyExtractor={(item, index) => `${item}${index}_friend`}
           ListEmptyComponent={renderEmpty}
           contentContainerStyle={styles.flatListContentContainer}
           showsVerticalScrollIndicator={false}
@@ -106,7 +115,12 @@ export default () => {
           onRefresh={onRefresh} // 새로고침 함수 연결
         />
       </View>
-      <FriendDetail isVisible={isVisible} setIsVisible={setIsVisible} />
+      <FriendDetail
+        isVisible={isVisible}
+        setIsVisible={setIsVisible}
+        friendId={friendId}
+        friendName={firendName}
+      />
     </>
   );
 };
