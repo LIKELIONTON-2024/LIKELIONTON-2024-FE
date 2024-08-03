@@ -5,7 +5,6 @@ import { useNavigation } from "@react-navigation/native";
 const SettingIcon = require("../../assets/icons/settingIcon.png");
 
 const SettingSection = ({ nickname }) => {
-  // Receive nickname as a prop
   const navigation = useNavigation();
 
   return (
@@ -16,7 +15,7 @@ const SettingSection = ({ nickname }) => {
           screen: "Setting",
           params: { nickname },
         })
-      } // Pass nickname
+      }
     >
       <Image source={SettingIcon} style={styles.settingIcon} />
     </TouchableOpacity>

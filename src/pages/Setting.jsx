@@ -6,7 +6,6 @@ import DetailArrow from "../components/MyPage/DetailArrow";
 import { COLOR } from "../styles/color";
 
 const Setting = ({ route, navigation }) => {
-  // Extract nickname from route params
   const { nickname } = route.params || {};
 
   return (

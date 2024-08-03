@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // AsyncStorage 임포트
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Cat from "../assets/images/defaultCat.png";
 import { COLOR } from "../styles/color";
 import { Margin } from "../components/common/Margin";
@@ -19,7 +19,8 @@ import search from "../assets/icons/searchIcon.png";
 import { BaseURL } from "../apis/api";
 
 // 더미 액세스 토큰 (로그인 시 발급받은 실제 토큰으로 변경)
-const accessToken = "your_access_token_here";
+
+const accessToken = "google_login_accessToken";
 
 const SignUp = ({ navigation }) => {
   const [nickname, setNickname] = useState("");
@@ -40,17 +41,17 @@ const SignUp = ({ navigation }) => {
     return null;
   }, [nickname]);
 
-  // 우편번호 오류 검증
-  const zipCodeErrorText = useMemo(() => {
-    if (zipCode.length === 0) {
-      return "우편번호를 입력해주세요.";
-    }
-    // 5자리 숫자 검증
-    if (!/^\d{5}$/.test(zipCode)) {
-      return "유효한 우편번호를 입력해주세요.";
-    }
-    return null;
-  }, [zipCode]);
+  // // 우편번호 오류 검증
+  // const zipCodeErrorText = useMemo(() => {
+  //   if (zipCode.length === 0) {
+  //     return "우편번호를 입력해주세요.";
+  //   }
+  //   // 5자리 숫자 검증
+  //   if (!/^\d{5}$/.test(zipCode)) {
+  //     return "유효한 우편번호를 입력해주세요.";
+  //   }
+  //   return null;
+  // }, [zipCode]);
 
   // 닉네임 입력 핸들러
   const onChangeNickname = useCallback((text) => {
@@ -66,9 +67,9 @@ const SignUp = ({ navigation }) => {
   const postData = async () => {
     const url = `${BaseURL}/user/join`;
     const data = {
-      email: "sungmin0304@gmail.com",
+      email: "sungmin1234@naver.com",
       nickname,
-      zipCode,
+      address: zipCode,
     };
 
     try {
@@ -106,8 +107,8 @@ const SignUp = ({ navigation }) => {
 
   // 다음 버튼 활성화 여부 결정
   const nextButtonEnabled = useMemo(() => {
-    return nicknameErrorText == null && zipCodeErrorText == null;
-  }, [nicknameErrorText, zipCodeErrorText]);
+    return nicknameErrorText == null;
+  }, [nicknameErrorText]);
 
   // 다음 버튼 스타일 결정
   const nextButtonStyle = useMemo(() => {
@@ -179,9 +180,9 @@ const SignUp = ({ navigation }) => {
           <Text style={{ color: COLOR.GRAY_200 }}>
             장소 인증을 위해 필요해요.
           </Text>
-          {zipCodeErrorText && (
+          {/* {zipCodeErrorText && (
             <Text style={styles.errorText}>{zipCodeErrorText}</Text>
-          )}
+          )} */}
         </View>
       </View>
       <View style={{ paddingHorizontal: 34, paddingVertical: 10 }}>

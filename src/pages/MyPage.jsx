@@ -11,8 +11,8 @@ import ProfileSection from "../components/MyPage/ProfileSection";
 import TabSection from "../components/MyPage/TabSection";
 import { COLOR } from "../styles/color";
 import { BaseURL } from "../apis/api";
-
-const accessToken = "your_actual_access_token_here";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 const MyPageScreen = () => {
   const [data, setData] = useState(null);
@@ -22,32 +22,20 @@ const MyPageScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${BaseURL}/user/my`, {
-          method: "GET",
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        if (!accessToken) {
+          throw new Error("로그인 정보가 없습니다.");
+        }
+
+        const response = await axios.get(`${BaseURL}/user/my`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
         });
-
-        // 상태 코드와 응답 본문 로깅
         console.log("응답 상태:", response.status);
-        const result = await response.json();
-        console.log("응답 본문:", result);
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error("인증 오류: 토큰이 유효하지 않습니다.");
-          } else if (response.status === 403) {
-            throw new Error("권한 오류: 접근이 거부되었습니다.");
-          } else {
-            throw new Error(
-              `네트워크 응답이 올바르지 않습니다: ${response.statusText}`
-            );
-          }
-        }
-
-        setData(result);
+        console.log("응답 본문:", response.data);
+        setData(response.data);
       } catch (error) {
         console.error("요청 오류:", error.message);
         setError(error.message);

@@ -9,10 +9,12 @@ const NoMapView = () => (
       <Text style={styles.noMapText}>오늘은 인증 완료!</Text>
     </View>
   </ImageRenderer>
+
 );
 
 const styles = StyleSheet.create({
   noMapContainer: {
+
     justifyContent: "center",
     alignItems: "center",
   },
@@ -21,6 +23,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: COLOR.GRAY_300,
+
   },
 });
 

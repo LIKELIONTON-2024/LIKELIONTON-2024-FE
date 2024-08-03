@@ -1,14 +1,23 @@
-import { View, Text, StyleSheet, SafeAreaView, Image } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { COLOR } from "../../styles/color";
+
 const SnackIcon = require("../../assets/icons/snackIcon.png");
 
-const snackCnt = 3;
-const SaleSnack = () => {
+const SaleSnack = ({ snackCount }) => {
+  if (snackCount === undefined || snackCount === null) {
+    return (
+      <View style={styles.snackContainer}>
+        <Text style={styles.snack}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.snackContainer}>
-      <Text style={styles.snack}> 츄르</Text>
-      <Image source={SnackIcon} style={styles.snackImg}></Image>
-      <Text style={styles.snackCount}>{snackCnt}</Text>
+      <Text style={styles.snack}>츄르</Text>
+      <Image source={SnackIcon} style={styles.snackImg} />
+      <Text style={styles.snackCount}>{snackCount}</Text>
       <Text style={styles.snack}>개로 구매 가능</Text>
     </View>
   );
@@ -24,6 +33,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.YELLOW_100,
     borderRadius: 20,
     marginBottom: 21,
+    paddingHorizontal: 10,
   },
   snack: {
     fontSize: 15,
@@ -31,14 +41,14 @@ const styles = StyleSheet.create({
   snackImg: {
     height: 16,
     width: 16,
-    marginLeft: 2,
-    marginRight: 1,
+    marginHorizontal: 4,
   },
   snackCount: {
     fontSize: 24,
     fontWeight: "bold",
     color: COLOR.BLUE_300,
-    marginRight: 1,
+    marginHorizontal: 4,
   },
 });
+
 export default SaleSnack;

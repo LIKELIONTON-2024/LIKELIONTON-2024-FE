@@ -15,7 +15,7 @@ const ActivitiesScreen = ({ data }) => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("ko-KR"); // 한국 날짜 형식으로 'yyyy년 M월 d일'
+    return date.toLocaleDateString("ko-KR");
   };
 
   return (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import {
   StyleSheet,
   View,
@@ -8,6 +9,7 @@ import {
   Modal,
 } from "react-native";
 import { Camera } from "expo-camera";
+
 import { COLOR } from "../../styles/color";
 
 const CancelButton = require("../../assets/icons/cancleIcon.png");
@@ -33,7 +35,7 @@ const CertificationModal = ({
   const takePicture = async () => {
     if (cameraRef) {
       const photo = await cameraRef.takePictureAsync();
-      setPhoto(photo.uri); // Save photo URI for rendering
+      setPhoto(photo.uri);
     }
   };
 
@@ -107,20 +109,22 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: "80%",
+    width: 325,
+    height: 545,
     padding: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
+    backgroundColor: COLOR.WHITE,
+    borderRadius: 30,
     position: "relative",
+    marginBottom: 98,
   },
   closeButton: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 13,
+    right: 13,
   },
   cancelIcon: {
-    width: 24,
-    height: 24,
+    width: 34,
+    height: 34,
   },
   modalBody: {
     alignItems: "center",
@@ -130,14 +134,14 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 23,
   },
   cameraContainer: {
-    width: "100%",
-    height: 200,
+    width: 255,
+    height: 346,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 23,
   },
   camera: {
     flex: 1,
@@ -166,6 +170,7 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 20,
   },
+
   verifyButton: {
     width: 229,
     justifyContent: "center",

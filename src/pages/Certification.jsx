@@ -2,10 +2,14 @@ import React, { useRef, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import * as Location from "expo-location";
 import MapView from "../components/Certification/MapView";
-import CertificationModal from "../components/Certification/CertificationModal";
 import NoMapView from "../components/Certification/NoMapView";
+import CertificationModal from "../components/Certification/CertificationModal";
+import CustomToast from "../components/Certification/CustomToast";
 import { COLOR } from "../styles/color";
 import { getDistance } from "../utils/distanceUtils";
+import { BaseURL } from "../apis/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 export default ({ navigation }) => {
   const [location, setLocation] = useState(null);
@@ -14,31 +18,81 @@ export default ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [mapVisible, setMapVisible] = useState(true);
   const [certified, setCertified] = useState(false);
+  const [spots, setSpots] = useState([]);
+  const [hasCertifiedToday, setHasCertifiedToday] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
   const webViewRef = useRef(null);
 
-  const spots = [
-    {
-      userId: 4,
-      spotId: 13,
-      name: "화양동느티나무",
-      latitude: 37.5464290217723,
-      longitude: 127.072005790412,
-    },
-    {
-      userId: 4,
-      spotId: 14,
-      name: "세븐일레븐 화양리점",
-      latitude: 37.5474139697658,
-      longitude: 127.070250476163,
-    },
-    {
-      userId: 4,
-      spotId: 15,
-      name: "어린이대공원역 7호선",
-      latitude: 37.54796087622509,
-      longitude: 127.07465525507352,
-    },
-  ];
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        if (!accessToken) {
+          throw new Error("로그인 정보가 없습니다.");
+        }
+
+        const response = await axios.get(`${BaseURL}/user/my`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const today = new Date().toISOString().split("T")[0];
+        const visitDays = response.data.visitDays || [];
+
+        const visitDates = visitDays.map(
+          (dateTime) => new Date(dateTime).toISOString().split("T")[0]
+        );
+
+        setHasCertifiedToday(visitDates.includes(today));
+
+        // 주석 처리하여 NoMapView 조건부 렌더링 비활성화
+        if (visitDates.includes(today)) {
+          setMapVisible(true); // 카메라 모달 고치면 false로!
+          fetchSpots(); // 이것도 없애고
+        } else {
+          fetchSpots();
+        }
+      } catch (error) {
+        console.error("프로필 정보를 가져오는 데 실패했습니다:", error.message);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const fetchSpots = async () => {
+    try {
+      console.log("Fetching spots...");
+
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      if (!accessToken) {
+        throw new Error("로그인 정보가 없습니다.");
+      }
+
+      const { coords } = await Location.getCurrentPositionAsync({});
+      setLocation(coords);
+
+      console.log("Current location:", coords);
+
+      const response = await axios.get(`${BaseURL}/spot/recommend`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        },
+      });
+
+      console.log("Spots fetched:", response.data);
+      setSpots(response.data);
+    } catch (error) {
+      console.error("스팟 목록을 가져오는 데 실패했습니다:", error.message);
+    }
+  };
 
   useEffect(() => {
     let locationWatchSubscription = null;
@@ -102,7 +156,7 @@ export default ({ navigation }) => {
         locationWatchSubscription.remove();
       }
     };
-  }, []);
+  }, [spots]);
 
   useEffect(() => {
     if (certified) {
@@ -117,6 +171,7 @@ export default ({ navigation }) => {
       if (data && data.type === "SELECT_SPOT") {
         const spotId = data.data.id;
         const spot = spots.find((s) => s.spotId === spotId);
+
         if (spot) {
           setSelectedSpot(spot);
           setModalVisible(true);
@@ -137,12 +192,15 @@ export default ({ navigation }) => {
         selectedSpot.longitude
       );
 
+      console.log("Distance to selected spot:", distance);
+
       if (distance <= 10) {
         setModalVisible(false);
         setCertified(true);
-        navigation.navigate("VerifyComplete");
+        navigation.navigate("VerifyComplete", { spotId: selectedSpot.spotId });
       } else {
-        setErrorMessage("거리가 멀어서 인증할 수 없습니다.");
+        setToastMessage("거리가 너무 멀어요! 10m 내에서 찍어주세요.");
+        setToastVisible(true);
       }
     }
   };
@@ -165,6 +223,11 @@ export default ({ navigation }) => {
         spot={selectedSpot}
         errorMessage={errorMessage}
         onVerify={handleVerify}
+      />
+      <CustomToast
+        message={toastMessage}
+        visible={toastVisible}
+        onClose={() => setToastVisible(false)}
       />
     </View>
   );

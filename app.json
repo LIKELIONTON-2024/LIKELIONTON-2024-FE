@@ -14,7 +14,10 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "This app needs access to your location to provide location-based services."
+        "NSLocationWhenInUseUsageDescription": "This app needs access to your location to provide location-based services.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
       }
     },
     "android": {
@@ -36,6 +39,7 @@
         }
       ],
       "expo-secure-store"
+
     ]
   }
 }

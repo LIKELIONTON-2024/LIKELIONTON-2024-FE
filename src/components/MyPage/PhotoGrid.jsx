@@ -10,20 +10,22 @@ const PhotoGrid = ({
 }) => {
   return (
     <View style={styles.grid}>
-      {images.map((image, index) => {
+      {images.map((image) => {
         const isLocked = lockedImages[image.name];
 
         const lockImage =
-          type === "배경"
+          type === "background"
             ? require("../../assets/images/lockBack.png")
             : require("../../assets/images/lock.png");
 
         const lockImageStyle =
-          type === "배경" ? styles.lockedIconBackground : styles.lockedIconFur;
+          type === "background"
+            ? styles.lockedIconBackground
+            : styles.lockedIconFur;
 
         return (
           <TouchableOpacity
-            key={index}
+            key={image.name}
             style={styles.imageContainer}
             onPress={() => onImagePress(image)}
           >
@@ -48,6 +50,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: "relative",
+    marginBottom: 10,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

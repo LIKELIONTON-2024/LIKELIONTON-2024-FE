@@ -1,95 +1,169 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
+import axios from "axios";
 import { COLOR } from "../../styles/color";
 import PhotoGrid from "./PhotoGrid";
 import CustomModal from "./CustomModal";
 import BottomSheetHeader from "./BottomSheetHeader";
+import { BaseURL } from "../../apis/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 
-const imageList = {
-  털: [
-    {
-      name: "fur1.png",
-      uri: require("../../assets/images/fur1.png"),
-      koreanName: "갈색냥이",
-    },
-    {
-      name: "fur2.png",
-      uri: require("../../assets/images/fur2.png"),
-      koreanName: "검정냥이",
-    },
-    {
-      name: "fur3.png",
-      uri: require("../../assets/images/fur3.png"),
-      koreanName: "회색냥이",
-    },
-    {
-      name: "fur4.png",
-      uri: require("../../assets/images/fur4.png"),
-      koreanName: "흰색냥이",
-    },
-  ],
-  배경: [
-    {
-      name: "background1.png",
-      uri: require("../../assets/images/background1.png"),
-      koreanName: "하얀",
-    },
-    {
-      name: "background2.png",
-      uri: require("../../assets/images/background2.png"),
-      koreanName: "풀밭",
-    },
-  ],
+const imageAssets = {
+  cat: {
+    default: require("../../assets/images/fur1.png"),
+    black: require("../../assets/images/fur2.png"),
+    gray: require("../../assets/images/fur3.png"),
+    white: require("../../assets/images/fur4.png"),
+  },
+  background: {
+    default: require("../../assets/images/background1.png"),
+    green: require("../../assets/images/background2.png"),
+  },
 };
 
 const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
-  const [activeTab, setActiveTab] = useState("털");
+  const [activeTab, setActiveTab] = useState("cat");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [lockedImages, setLockedImages] = useState({
-    "fur1.png": false,
-    "fur2.png": true,
-    "fur3.png": true,
-    "fur4.png": true,
-    "background1.png": false,
-    "background2.png": true,
-  });
+  const [lockedImages, setLockedImages] = useState({});
+  const [churuCount, setChuruCount] = useState(0);
+  const [inventory, setInventory] = useState([]);
+  const [showInsufficientChuruMessage, setShowInsufficientChuruMessage] =
+    useState(false);
   const bottomSheetRef = useRef(null);
+
+  const fetchInventoryData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      if (!accessToken) {
+        throw new Error("No access token found.");
+      }
+
+      const response = await axios.get(`${BaseURL}/user/inventory`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      console.log("API Response:", response.data);
+
+      const fetchedInventory = response.data.inventory || [];
+      const churu = response.data.totalChuru || 0;
+
+      const lockedImagesData = {};
+      fetchedInventory.forEach((item) => {
+        lockedImagesData[item.name] = item.isLocked;
+      });
+
+      setInventory(fetchedInventory);
+      setLockedImages(lockedImagesData);
+      setChuruCount(churu);
+    } catch (error) {
+      console.error(
+        "Failed to fetch inventory data:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
+
+  useEffect(() => {
+    fetchInventoryData();
+  }, []);
 
   const handleSheetChanges = useCallback((index) => {
     console.log("BottomSheet index:", index);
   }, []);
 
   const handleImagePress = (image) => {
-    if (lockedImages[image.name]) {
-      setSelectedImage(image);
+    const selectedImageData = inventory.find(
+      (item) => item.name === image.name && item.type === activeTab
+    );
+
+    if (selectedImageData && selectedImageData.isLocked) {
+      setSelectedImage({
+        ...image,
+        churu: selectedImageData.churu,
+        koreanName: selectedImageData.koreanName,
+        type: activeTab,
+      });
       setIsModalVisible(true);
     } else {
-      if (activeTab === "배경") {
-        onBackgroundSelect(image.uri);
+      if (activeTab === "background") {
+        onBackgroundSelect({
+          type: activeTab,
+          name: image.name,
+        });
       } else {
-        onImageSelect(image.uri);
+        onImageSelect({
+          type: activeTab,
+          name: image.name,
+        });
       }
     }
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (selectedImage) {
-      setLockedImages((prevLockedImages) => ({
-        ...prevLockedImages,
-        [selectedImage.name]: false,
-      }));
-      setIsModalVisible(false);
-      setSelectedImage(null);
+      if (churuCount >= selectedImage.churu) {
+        try {
+          const accessToken = await AsyncStorage.getItem("accessToken");
+          if (!accessToken) {
+            throw new Error("No access token found.");
+          }
+
+          const response = await axios.put(
+            `${BaseURL}/inventory/buy?type=${selectedImage.type}&name=${selectedImage.name}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            setLockedImages((prevLockedImages) => ({
+              ...prevLockedImages,
+              [selectedImage.name]: false,
+            }));
+            setChuruCount(
+              (prevChuruCount) => prevChuruCount - selectedImage.churu
+            );
+            setIsModalVisible(false);
+            setSelectedImage(null);
+            setShowInsufficientChuruMessage(false);
+          } else {
+            console.error("Failed to purchase item:", response.data);
+          }
+        } catch (error) {
+          console.error(
+            "Failed to purchase item:",
+            error.response ? error.response.data : error.message
+          );
+        }
+      } else {
+        setShowInsufficientChuruMessage(true);
+      }
     }
   };
 
-  const getImageStyle = () => {
-    return activeTab === "배경" ? styles.backgroundImage : styles.defaultImage;
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setShowInsufficientChuruMessage(false);
   };
+
+  const getImageStyle = () => {
+    return activeTab === "background"
+      ? styles.backgroundImage
+      : styles.defaultImage;
+  };
+
+  useEffect(() => {
+    console.log("Selected Image:", selectedImage);
+  }, [selectedImage]);
 
   return (
     <View style={styles.container}>
@@ -110,7 +184,11 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
         <View style={styles.content}>
           <ScrollView contentContainerStyle={styles.scrollViewContent}>
             <PhotoGrid
-              images={imageList[activeTab] || []}
+              images={Object.keys(imageAssets[activeTab] || {}).map((key) => ({
+                name: key,
+                uri: imageAssets[activeTab][key],
+                koreanName: key,
+              }))}
               onImagePress={handleImagePress}
               getImageStyle={getImageStyle}
               lockedImages={lockedImages}
@@ -123,10 +201,12 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
       {selectedImage && (
         <CustomModal
           visible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
+          onClose={handleCloseModal}
           onPurchase={handlePurchase}
-          image={selectedImage.uri}
+          image={imageAssets[selectedImage.type][selectedImage.name]}
           koreanName={selectedImage.koreanName}
+          price={selectedImage.churu}
+          showInsufficientChuruMessage={showInsufficientChuruMessage}
         />
       )}
     </View>

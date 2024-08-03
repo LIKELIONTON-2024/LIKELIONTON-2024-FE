@@ -1,27 +1,39 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, ActivityIndicator } from "react-native";
 import { COLOR } from "../../styles/color";
+import useFetchUserImages from "../../hooks/useFetchUserImages";
 
-const mockData = {
-  inventoryImage:
-    "https://likelion-hikikomori.s3.ap-northeast-2.amazonaws.com/inventory-default.png",
-  inventoryBackgroundImage:
-    "https://likelion-hikikomori.s3.ap-northeast-2.amazonaws.com/default.png",
-};
+const ProfileSection = React.memo(({ nickname }) => {
+  const { data, loading, error } = useFetchUserImages();
 
-const ProfileSection = ({ nickname }) => (
-  <View style={styles.profileImgContainer}>
-    <Image
-      source={{ uri: mockData.inventoryImage }}
-      style={styles.profileImg}
-    />
-    <Text style={styles.userName}>{nickname}</Text>
-  </View>
-);
+  if (loading) {
+    return (
+      <View style={styles.profileImgContainer}>
+        <ActivityIndicator size="large" color={COLOR.BLACK} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.profileImgContainer}>
+        <Text>Error: {error}</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.profileImgContainer}>
+      <Image source={{ uri: data?.inventoryImage }} style={styles.profileImg} />
+      <Text style={styles.userName}>{nickname}</Text>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   profileImgContainer: {
     marginTop: 54,
+    alignItems: "center",
   },
   profileImg: {
     width: 191,

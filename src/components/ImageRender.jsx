@@ -1,49 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, Image, Text, StyleSheet } from "react-native";
-import { COLOR } from "../styles/color";
-
-// Mock data
-const mockData = {
-  inventoryImage:
-    "https://likelion-hikikomori.s3.ap-northeast-2.amazonaws.com/inventory-default.png",
-  inventoryBackgroundImage:
-    "https://likelion-hikikomori.s3.ap-northeast-2.amazonaws.com/default.png",
-};
+import useFetchUserImages from "../hooks/useFetchUserImages";
 
 const ImageRenderer = ({
   showInventoryImage = true,
   showBackgroundImage = true,
   children,
 }) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // Data fetch simulation (using mock data for now)
-    const fetchData = async () => {
-      try {
-        // Uncomment and use this for real data fetching
-        /*
-        const response = await fetch('https://your-api-endpoint.com/images'); // Replace with actual URL
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const result = await response.json();
-        setData(result);
-        */
-
-        // Use mock data
-        setData(mockData);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { data, loading, error } = useFetchUserImages();
 
   if (loading) {
     return (
@@ -106,7 +70,6 @@ const styles = StyleSheet.create({
   inventoryImage: {
     width: 218,
     height: 218,
-    // marginBottom: 20,
     zIndex: 1,
   },
 });

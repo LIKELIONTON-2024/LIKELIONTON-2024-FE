@@ -10,7 +10,17 @@ import {
 import { COLOR } from "../../styles/color";
 import SaleSnack from "../../components/MyPage/SaleSnack.jsx";
 
-const CustomModal = ({ visible, onClose, onPurchase, image, koreanName }) => {
+const CustomModal = ({
+  visible,
+  onClose,
+  onPurchase,
+  image,
+  koreanName,
+  price,
+  showInsufficientChuruMessage,
+}) => {
+  console.log("CustomModal Price:", price);
+
   return (
     <Modal
       visible={visible}
@@ -29,7 +39,10 @@ const CustomModal = ({ visible, onClose, onPurchase, image, koreanName }) => {
           <View style={styles.modalBody}>
             <Image source={image} style={styles.image} />
             <Text style={styles.modalTitle}>{koreanName}</Text>
-            <SaleSnack />
+            <SaleSnack snackCount={price} />
+            {showInsufficientChuruMessage && (
+              <Text style={styles.errorText}>츄르가 부족합니다.</Text>
+            )}
             <TouchableOpacity
               style={styles.purchaseButton}
               onPress={onPurchase}
@@ -83,6 +96,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
   purchaseButton: {
     width: 229,
