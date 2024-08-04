@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     color: COLOR.GRAY_400,
   },
   activeTabText: {
-    color: COLOR.BLUE_400,
+    color: COLOR.GRAY_400,
   },
   indicator: {
     position: "absolute",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -7,21 +7,21 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { BaseURL } from '../../apis/api';
-import { COLOR } from '../../styles/color';
-import cat from '../../assets/images/defaultCat.png';
-import arrow from '../../assets/icons/arrowRightIcon.png';
-import FriendDetail from '../../components/Friends/FriendDetail';
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { BaseURL } from "../../apis/api";
+import { COLOR } from "../../styles/color";
+import cat from "../../assets/images/defaultCat.png";
+import arrow from "../../assets/icons/arrowRightIcon.png";
+import FriendDetail from "../../components/Friends/FriendDetail";
 
-const { width } = Dimensions.get('screen');
+const { width } = Dimensions.get("screen");
 
 export default () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false); // 새로고침 상태 추가
   const [isVisible, setIsVisible] = useState(false);
 
@@ -31,9 +31,9 @@ export default () => {
 
   const fetchFriends = async () => {
     try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
+      const accessToken = await AsyncStorage.getItem("accessToken");
       if (!accessToken) {
-        setError('로그인 정보가 없습니다.');
+        setError("로그인 정보가 없습니다.");
         return;
       }
 
@@ -44,7 +44,7 @@ export default () => {
       });
       setFriends(res.data);
     } catch (err) {
-      setError('데이터를 가져오는 중 오류가 발생했습니다.');
+      setError("데이터를 가져오는 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
       setRefreshing(false); // 새로고침 상태 종료
@@ -116,17 +116,17 @@ const styles = StyleSheet.create({
     paddingBottom: 150,
   },
   renderItemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     width,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     padding: 20,
     borderBottomWidth: 0.5,
     borderColor: COLOR.GRAY_200,
   },
   renderItemProfile: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 16,
   },
   renderItemImage: {
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 34.5,
   },
   nickname: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 17,
   },
   icon: {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 17,
   },
   loadingText: {
@@ -154,13 +154,13 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 18,
-    color: 'red',
+    color: "red",
     marginTop: 20,
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 20,
   },
   emptyText: {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     color: COLOR.GRAY_400,
   },
   rightSection: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   dateTimeText: {
     fontSize: 13,

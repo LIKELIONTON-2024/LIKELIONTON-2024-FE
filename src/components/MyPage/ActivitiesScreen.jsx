@@ -41,6 +41,11 @@ const ActivitiesScreen = ({ data }) => {
           </View>
         </View>
       </View>
+      <View style={styles.infoContainerHeaderContainer}>
+        <Image source={Line} />
+        <Text style={styles.infoContainerHeader}>뱃지</Text>
+        <Image source={Line} />
+      </View>
       <View style={styles.badgeContainer}>
         <Image source={{ uri: data.badgeImage }} style={styles.badge} />
       </View>
@@ -51,7 +56,6 @@ const ActivitiesScreen = ({ data }) => {
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 34,
-    marginTop: 34,
     marginBottom: 5,
   },
   infoContainerHeaderContainer: {
@@ -60,6 +64,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 29,
     marginBottom: 18,
+    marginTop: 12,
   },
   infoContainerHeader: {
     fontSize: 17,
@@ -98,7 +103,6 @@ const styles = StyleSheet.create({
     width: 93,
     height: 93,
     resizeMode: "contain",
-    marginVertical: 16,
   },
   loadingContainer: {
     flex: 1,

@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
     width: 182,
     height: 182,
     marginBottom: 11,
+    resizeMode: "contain",
   },
   modalTitle: {
     fontSize: 24,
@@ -98,8 +99,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    color: "red",
-    marginBottom: 10,
+    color: COLOR.RED,
+    marginBottom: 16,
   },
   purchaseButton: {
     width: 229,

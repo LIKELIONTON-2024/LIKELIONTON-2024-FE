@@ -1,18 +1,18 @@
 import React from "react";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
-
+import { COLOR } from "../../styles/color";
 const PhotoGrid = ({
   images,
   onImagePress,
   getImageStyle,
   lockedImages,
   type,
+  selectedImageName,
 }) => {
   return (
     <View style={styles.grid}>
       {images.map((image) => {
         const isLocked = lockedImages[image.name];
-
         const lockImage =
           type === "background"
             ? require("../../assets/images/lockBack.png")
@@ -23,10 +23,15 @@ const PhotoGrid = ({
             ? styles.lockedIconBackground
             : styles.lockedIconFur;
 
+        const isSelected = selectedImageName === image.name;
+
         return (
           <TouchableOpacity
             key={image.name}
-            style={styles.imageContainer}
+            style={[
+              styles.imageContainer,
+              isSelected && styles.selectedImageContainer,
+            ]}
             onPress={() => onImagePress(image)}
           >
             <Image source={image.uri} style={getImageStyle()} />
@@ -50,7 +55,14 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: "relative",
+    marginTop: 10,
     marginBottom: 10,
+    borderWidth: 2,
+    borderColor: "transparent",
+    alignItems: "center",
+  },
+  selectedImageContainer: {
+    borderColor: COLOR.BLUE_400,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

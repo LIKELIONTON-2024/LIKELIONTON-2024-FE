@@ -28,6 +28,10 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
   const [activeTab, setActiveTab] = useState("cat");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImageNames, setSelectedImageNames] = useState({
+    cat: null,
+    background: null,
+  });
   const [lockedImages, setLockedImages] = useState({});
   const [churuCount, setChuruCount] = useState(0);
   const [inventory, setInventory] = useState([]);
@@ -54,13 +58,21 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
       const churu = response.data.totalChuru || 0;
 
       const lockedImagesData = {};
+      const initialSelectedImageNames = {
+        cat: null,
+        background: null,
+      };
       fetchedInventory.forEach((item) => {
         lockedImagesData[item.name] = item.isLocked;
+        if (item.isSelected) {
+          initialSelectedImageNames[item.type] = item.name;
+        }
       });
 
       setInventory(fetchedInventory);
       setLockedImages(lockedImagesData);
       setChuruCount(churu);
+      setSelectedImageNames(initialSelectedImageNames);
     } catch (error) {
       console.error(
         "Failed to fetch inventory data:",
@@ -102,6 +114,10 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
           name: image.name,
         });
       }
+      setSelectedImageNames((prev) => ({
+        ...prev,
+        [activeTab]: image.name,
+      }));
     }
   };
 
@@ -134,6 +150,10 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
             );
             setIsModalVisible(false);
             setSelectedImage(null);
+            setSelectedImageNames((prev) => ({
+              ...prev,
+              [selectedImage.type]: selectedImage.name,
+            }));
             setShowInsufficientChuruMessage(false);
           } else {
             console.error("Failed to purchase item:", response.data);
@@ -193,6 +213,7 @@ const ShopBottomSheet = ({ onImageSelect, onBackgroundSelect }) => {
               getImageStyle={getImageStyle}
               lockedImages={lockedImages}
               type={activeTab}
+              selectedImageName={selectedImageNames[activeTab]}
             />
           </ScrollView>
         </View>
@@ -233,7 +254,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    marginHorizontal: 44,
+    marginHorizontal: 40,
   },
   scrollViewContent: {
     flexDirection: "row",

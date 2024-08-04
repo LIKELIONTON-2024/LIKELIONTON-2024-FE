@@ -8,36 +8,15 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
-import { Camera } from "expo-camera";
-
+import Camera from "./Camera";
 import { COLOR } from "../../styles/color";
 
 const CancelButton = require("../../assets/icons/cancleIcon.png");
 
-const CertificationModal = ({
-  visible,
-  onClose,
-  spot,
-  errorMessage,
-  onVerify,
-}) => {
+const CertificationModal = ({ visible, onClose, spot, onVerify }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === "granted");
-    })();
-  }, []);
-
-  const takePicture = async () => {
-    if (cameraRef) {
-      const photo = await cameraRef.takePictureAsync();
-      setPhoto(photo.uri);
-    }
-  };
 
   return (
     <Modal
@@ -54,40 +33,18 @@ const CertificationModal = ({
           {spot && (
             <View style={styles.modalBody}>
               <View style={styles.cameraContainer}>
-                {hasPermission === null ? (
-                  <Text>Requesting for camera permission</Text>
-                ) : hasPermission === false ? (
-                  <Text>No access to camera</Text>
-                ) : (
-                  <Camera
-                    style={styles.camera}
-                    type={Camera.Constants.Type.back}
-                    ref={(ref) => setCameraRef(ref)}
-                  >
-                    {/* <View style={styles.cameraButtonContainer}>
-                      <TouchableOpacity
-                        style={styles.cameraButton}
-                        onPress={takePicture}
-                      >
-                        <Text style={styles.cameraButtonText}> 촬영 </Text>
-                      </TouchableOpacity>
-                    </View> */}
-                  </Camera>
-                )}
+                <Camera />
               </View>
               {photo && (
                 <Image source={{ uri: photo }} style={styles.previewImage} />
               )}
               <Text style={styles.modalTitle}>{spot.name}</Text>
-              {errorMessage && (
-                <Text style={styles.errorMessage}>{errorMessage}</Text>
-              )}
+
               <TouchableOpacity
                 style={styles.verifyButton}
                 onPress={() => {
                   if (onVerify) {
                     onVerify();
-                    takePicture();
                   }
                 }}
               >
@@ -111,7 +68,6 @@ const styles = StyleSheet.create({
   modalContent: {
     width: 325,
     height: 545,
-    padding: 20,
     backgroundColor: COLOR.WHITE,
     borderRadius: 30,
     position: "relative",
@@ -129,10 +85,10 @@ const styles = StyleSheet.create({
   modalBody: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: 58,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 23,
   },
@@ -182,10 +138,6 @@ const styles = StyleSheet.create({
   verifyText: {
     fontSize: 17,
     color: COLOR.WHITE,
-  },
-  errorMessage: {
-    color: "red",
-    marginVertical: 10,
   },
 });
 
