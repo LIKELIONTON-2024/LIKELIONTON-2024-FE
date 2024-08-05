@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { COLOR } from '../../styles/color';
-import cat from '../../assets/images/defaultCat.png';
 import plus from '../../assets/icons/plusIcon.png';
 import searchIcon from '../../assets/icons/searchIcon.png';
 import checkIcon from '../../assets/icons/checkIcon.png';
@@ -38,7 +37,7 @@ export default function FriendSearchScreen() {
 
       await axios.post(
         `${BaseURL}/friend-request/send?receiverId=${receiverId}`,
-        null, // 요청 본문은 비워두기
+        null,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

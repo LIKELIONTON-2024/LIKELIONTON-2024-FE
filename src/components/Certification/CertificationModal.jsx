@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -57,6 +57,39 @@ const CertificationModal = ({ visible, onClose, spot, onVerify }) => {
     </Modal>
   );
 };
+const CertificationModal = ({
+  visible,
+  onClose,
+  spot,
+  errorMessage,
+  onVerify,
+}) => (
+  <Modal
+    visible={visible}
+    transparent={true}
+    animationType="slide"
+    onRequestClose={onClose}
+  >
+    <View style={styles.modalContainer}>
+      <View style={styles.modalContent}>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Image source={CancelButton} style={styles.cancelIcon} />
+        </TouchableOpacity>
+        {spot && (
+          <View style={styles.modalBody}>
+            <Text style={styles.modalTitle}>{spot.name}</Text>
+            {errorMessage && (
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
+            )}
+            <TouchableOpacity style={styles.verifyButton} onPress={onVerify}>
+              <Text style={styles.verifyText}> 인증하기 </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    </View>
+  </Modal>
+);
 
 const styles = StyleSheet.create({
   modalContainer: {
@@ -81,6 +114,20 @@ const styles = StyleSheet.create({
   cancelIcon: {
     width: 34,
     height: 34,
+    width: "80%",
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    position: "relative",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+  },
+  cancelIcon: {
+    width: 24,
+    height: 24,
   },
   modalBody: {
     alignItems: "center",
@@ -127,6 +174,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+    marginTop: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
   verifyButton: {
     width: 229,
     justifyContent: "center",
@@ -138,6 +192,10 @@ const styles = StyleSheet.create({
   verifyText: {
     fontSize: 17,
     color: COLOR.WHITE,
+  },
+  errorMessage: {
+    color: "red",
+    marginVertical: 10,
   },
 });
 

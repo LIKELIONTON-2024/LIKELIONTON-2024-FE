@@ -1,2 +1,1 @@
-export const BaseURL =
-  "http://ec2-43-203-224-22.ap-northeast-2.compute.amazonaws.com:8080";
+export const BaseURL = process.env.REACT_APP_BASE_URL;

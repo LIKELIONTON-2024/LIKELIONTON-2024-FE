@@ -37,9 +37,13 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
-      ],
-      "expo-secure-store"
-
+      "expo-secure-store",
+        {
+          "cameraPermission": "Allow this app to access your camera",
+          "microphonePermission": "Allow this app to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
     ]
   }
 }

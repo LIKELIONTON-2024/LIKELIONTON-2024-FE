@@ -1,30 +1,21 @@
-import React, { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { COLOR } from "../styles/color";
+import React, { useEffect } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { COLOR } from '../styles/color';
+import logo from '../assets/images/logo.png';
 
 export default ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.replace("MainTab");
+      navigation.replace('MainTab');
     }, 1000);
   });
 
   return (
     <View style={styles.splashContainer}>
-      <View style={{ gap: 8 }}>
-        <Text
-          style={{
-            justifyContent: "flex-start",
-            color: COLOR.WHITE,
-            fontWeight: "bold",
-          }}
-        >
-          나가서 바람이라도 쐐____________
-        </Text>
-        <Text style={{ fontWeight: "bold", fontSize: 24 }}>회원가입이</Text>
-        <Text style={{ fontWeight: "bold", fontSize: 24 }}>
-          완료되었습니다!
-        </Text>
+      <View style={{ alignItems: 'center', gap: 15 }}>
+        <Image source={logo} style={{ width: 158, height: 130 }} />
+
+        <Text style={styles.text}>회원가입이 완료되었습니다!</Text>
       </View>
     </View>
   );
@@ -33,8 +24,12 @@ export default ({ navigation }) => {
 const styles = StyleSheet.create({
   splashContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingHorizontal: 41,
     backgroundColor: COLOR.BLUE_400,
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 24,
   },
 });
