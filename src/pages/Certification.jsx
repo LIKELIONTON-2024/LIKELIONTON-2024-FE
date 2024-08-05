@@ -160,7 +160,7 @@ export default ({ navigation }) => {
 
   useEffect(() => {
     if (certified) {
-      setMapVisible(true); // false로 수정해야힘 : 인증했으면 NoMapView로 막기
+      setMapVisible(false); // false로 수정해야힘 : 인증했으면 NoMapView로 막기
     }
   }, [certified]);
 
