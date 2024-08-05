@@ -16,7 +16,7 @@ import { COLOR } from '../styles/color';
 import { Margin } from '../components/common/Margin';
 import backButton from '../assets/icons/backButtonIcon.png';
 import search from '../assets/icons/searchIcon.png';
-import { BaseURL } from '../apis/api';
+import { BaseURL, signupURL } from '../apis/api';
 
 // 더미 액세스 토큰 (로그인 시 발급받은 실제 토큰으로 변경)
 const accessToken = 'google_login_accessToken';
@@ -62,18 +62,18 @@ const SignUp = ({ navigation }) => {
 
   // 데이터 전송 함수
   const postData = async () => {
-    const url = `${BaseURL}/user/join`;
     const data = {
-      email: 'sadboy13@gmail.com',
+      email: 'hh3133@gmail.com',
       nickname,
       address: zipCode,
+      // 서울 강동구 올림픽로 610
     };
 
     try {
-      const response = await axios.post(url, data, {
+      const response = await axios.post(signupURL, data, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`, // Bearer 토큰 인증 추가
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 

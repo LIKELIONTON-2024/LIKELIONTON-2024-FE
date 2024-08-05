@@ -36,12 +36,12 @@ export default () => {
         return;
       }
 
-      const res = await axios.get(`${BaseURL}/friend/list`, {
+      const response = await axios.get(`${BaseURL}/friend/list`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      setFriends(res.data);
+      setFriends(response.data);
     } catch (err) {
       setError('데이터를 가져오는 중 오류가 발생했습니다.');
     } finally {

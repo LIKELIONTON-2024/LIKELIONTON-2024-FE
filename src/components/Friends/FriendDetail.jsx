@@ -14,7 +14,6 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import cancleIcon from '../../assets/icons/cancleIcon.png';
-import cat from '../../assets/images/defaultCat.png';
 import { COLOR } from '../../styles/color';
 import { Margin } from '../common/Margin';
 import { BaseURL } from '../../apis/api';

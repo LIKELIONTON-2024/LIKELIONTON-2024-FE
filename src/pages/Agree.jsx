@@ -83,10 +83,7 @@ const Agree = ({ navigation }) => {
     if (locationErrorMsg) {
       Alert.alert('Error', locationErrorMsg);
     } else if (location) {
-      Alert.alert(
-        '성공',
-        `위도: ${location.coords.latitude}, 경도: ${location.coords.longitude}`
-      );
+      Alert.alert('성공', '위치 권한 설정이 완료되었습니다.');
       setLocationAgree(true);
     }
   };

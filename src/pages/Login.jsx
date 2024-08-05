@@ -74,7 +74,8 @@ export default ({ navigation }) => {
           text={'네이버로 계속하기'}
         />
         <Button
-          onPress={openAuthUri}
+          // onPress={openAuthUri}
+          onPress={() => navigation.navigate('Agree')}
           icon={googleIcon}
           bgColor={COLOR.GRAY_100}
           text={'구글로 계속하기'}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
 const projectId = 'hikikomori';
