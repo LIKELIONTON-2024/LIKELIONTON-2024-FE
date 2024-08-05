@@ -70,7 +70,8 @@ const styles = StyleSheet.create({
   inventoryImage: {
     width: 218,
     height: 218,
-    zIndex: 1,
+    position: "absolute",
+    top: 200,
   },
 });
 
