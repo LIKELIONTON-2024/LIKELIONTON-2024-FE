@@ -1,21 +1,46 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import useFetchUserImages from "../../hooks/useFetchUserImages";
 
 import { COLOR } from "../../styles/color";
 
-const ProfileImg = require("../../assets/images/defaultCat.png");
+const DefaultProfileImg = require("../../assets/images/defaultCat.png");
 const DetailArrow = require("../../assets/icons/detailArrow.png");
 
-const SettingProfile = () => {
+const SettingProfile = ({ nickname }) => {
   const navigation = useNavigation();
+  const { data, loading, error } = useFetchUserImages();
+
+  let profileImg = DefaultProfileImg;
+
+  if (loading) {
+    return (
+      <View style={styles.profileContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.profileContainer}>
+        <Text>Error: {error}</Text>
+      </View>
+    );
+  }
+
+  if (data && data.inventoryImage) {
+    profileImg = { uri: data.inventoryImage };
+  }
+
   return (
     <View style={styles.profileContainer}>
       <View style={styles.profileImgContainer}>
-        <Image source={ProfileImg} style={styles.profileImg} />
+        <Image source={profileImg} style={styles.profileImg} />
       </View>
       <View style={styles.profileTextContainer}>
-        <Text style={styles.userName}>독수리 오형제</Text>
+        <Text style={styles.userName}>{nickname}</Text>
         <Text style={styles.edit}>내 프로필 수정하기</Text>
       </View>
       <TouchableOpacity onPress={() => navigation.navigate("MyPage")}>

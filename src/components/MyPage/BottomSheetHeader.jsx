@@ -2,12 +2,22 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { COLOR } from "../../styles/color";
 
+const tabData = [
+  {
+    tab: "cat",
+    icon: require("../../assets/icons/furIcon.png"),
+    label: "털",
+  },
+  {
+    tab: "background",
+    icon: require("../../assets/icons/backgroundIcon.png"),
+    label: "배경",
+  },
+];
+
 const BottomSheetHeader = ({ activeTab, onTabChange }) => (
   <View style={styles.headerContainer}>
-    {[
-      { tab: "털", icon: require("../../assets/icons/furIcon.png") },
-      { tab: "배경", icon: require("../../assets/icons/backgroundIcon.png") },
-    ].map(({ tab, icon }) => (
+    {tabData.map(({ tab, icon, label }) => (
       <TouchableOpacity
         key={tab}
         style={styles.tab}
@@ -17,7 +27,7 @@ const BottomSheetHeader = ({ activeTab, onTabChange }) => (
         <Text
           style={[styles.tabText, activeTab === tab && styles.activeTabText]}
         >
-          {tab}
+          {label}
         </Text>
         {activeTab === tab && <View style={styles.indicator} />}
       </TouchableOpacity>
@@ -54,7 +64,7 @@ const styles = StyleSheet.create({
     color: COLOR.GRAY_400,
   },
   activeTabText: {
-    color: COLOR.BLUE_400,
+    color: COLOR.GRAY_400,
   },
   indicator: {
     position: "absolute",

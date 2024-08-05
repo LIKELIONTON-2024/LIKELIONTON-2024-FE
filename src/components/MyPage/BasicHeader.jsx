@@ -1,21 +1,24 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const GoBack = require("../../assets/icons/backButtonIcon.png");
 
-const BasicHeader = ({ title, toScreen }) => {
+const BasicHeader = ({ toScreen, onBackPress }) => {
   const navigation = useNavigation();
+
+  const handleBackPress = async () => {
+    if (onBackPress) {
+      await onBackPress();
+    }
+    navigation.navigate(toScreen);
+  };
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate(toScreen)}
-        style={styles.backButton}
-      >
+      <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
         <Image source={GoBack} style={styles.goBackImage} />
       </TouchableOpacity>
-      <Text style={styles.title}>{title}</Text>
     </View>
   );
 };
@@ -26,7 +29,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: "transparent",
   },
   backButton: {
     position: "absolute",

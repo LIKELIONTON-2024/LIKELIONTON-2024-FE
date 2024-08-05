@@ -4,13 +4,18 @@ import { useNavigation } from "@react-navigation/native";
 
 const SettingIcon = require("../../assets/icons/settingIcon.png");
 
-const SettingSection = () => {
+const SettingSection = ({ nickname }) => {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={styles.settingButton}
-      onPress={() => navigation.navigate("SettingStack", { screen: "Setting" })}
+      onPress={() =>
+        navigation.navigate("SettingStack", {
+          screen: "Setting",
+          params: { nickname },
+        })
+      }
     >
       <Image source={SettingIcon} style={styles.settingIcon} />
     </TouchableOpacity>

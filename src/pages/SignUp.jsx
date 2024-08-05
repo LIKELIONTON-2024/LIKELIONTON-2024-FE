@@ -63,7 +63,7 @@ const SignUp = ({ navigation }) => {
   // 데이터 전송 함수
   const postData = async () => {
     const data = {
-      email: 'hh3133@gmail.com',
+      email: 'hh3@gmail.com',
       nickname,
       address: zipCode,
       // 서울 강동구 올림픽로 610
