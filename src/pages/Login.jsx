@@ -1,5 +1,5 @@
 // todo : 구글 로그인
-import { Linking, SafeAreaView, Text, View } from 'react-native';
+import { Image, Linking, SafeAreaView, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Button } from '../components/common/button';
 import axios from 'axios';
@@ -8,6 +8,7 @@ import googleIcon from '../assets/icons/googleIcon.png';
 import naverIcon from '../assets/icons/naverIcon.png';
 import { COLOR } from '../styles/color';
 import { BaseURL } from '../apis/api';
+import logoImage from '../assets/images/logo.png';
 
 export default ({ navigation }) => {
   const [data, setData] = useState(null);
@@ -50,16 +51,7 @@ export default ({ navigation }) => {
           alignItems: 'center',
         }}
       >
-        <Text
-          style={{
-            alignSelf: 'flex-start',
-            color: COLOR.WHITE,
-            fontWeight: 'bold',
-          }}
-        >
-          나가서 바람이라도 쐐____________
-        </Text>
-        <Text style={{ fontWeight: 'bold', fontSize: 50 }}>힉힉호무리</Text>
+        <Image source={logoImage} style={{ width: 270, height: 218 }} />
       </View>
       <View
         style={{
@@ -82,7 +74,8 @@ export default ({ navigation }) => {
           text={'네이버로 계속하기'}
         />
         <Button
-          onPress={openAuthUri}
+          // onPress={openAuthUri}
+          onPress={() => navigation.navigate('Agree')}
           icon={googleIcon}
           bgColor={COLOR.GRAY_100}
           text={'구글로 계속하기'}
