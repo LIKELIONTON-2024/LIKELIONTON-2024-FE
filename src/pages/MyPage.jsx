@@ -6,6 +6,7 @@ import {
   Text,
   ActivityIndicator,
   ScrollView,
+  Image,
   RefreshControl,
 } from "react-native";
 import SettingSection from "../components/MyPage/SettingSection";
@@ -15,6 +16,7 @@ import { COLOR } from "../styles/color";
 import { BaseURL } from "../apis/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+const LoadingCat = require("../assets/images/loadingcat.png");
 
 const MyPageScreen = () => {
   const [data, setData] = useState(null);
@@ -63,8 +65,7 @@ const MyPageScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        {/* <ActivityIndicator size="large" color={COLOR.BLACK} /> */}
-        <Text>로딩중...</Text>
+        <Image source={LoadingCat} />
       </View>
     );
   }
@@ -107,6 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: COLOR.BLUE_400,
   },
   errorContainer: {
     flex: 1,
