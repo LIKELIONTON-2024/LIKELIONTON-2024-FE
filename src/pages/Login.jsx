@@ -14,12 +14,12 @@ export default ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // 데이터를 가져오는 함수
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${BaseURL}/oauth2/google/login`);
-      console.log("서버 응답 데이터:", response.data);
-      setAuthUri(response.data);
+      setAuthUri(response.data.authUri);
     } catch (err) {
       setError("인증 URL을 가져오는 중 오류가 발생했습니다.");
       console.error("Error fetching data:", err);
@@ -29,21 +29,24 @@ export default ({ navigation }) => {
     }
   };
 
+  // 딥링크 처리 함수
   const handleOpenURL = (event) => {
     const { url } = event;
-    console.log("딥링크 URL:", url);
     const codeMatch = url.match(/code=([^&]*)/);
 
     if (codeMatch) {
       const code = codeMatch[1];
+
+      // 백엔드로 인가 코드를 전달하여 사용자 정보 확인
       axios
         .get(`${BaseURL}/oauth2/google/user?code=${code}`)
         .then((response) => {
-          console.log("응답 데이터:", response.data);
           const { isJoined, email } = response.data;
           if (isJoined) {
+            // 이미 가입된 유저인 경우 메인 화면으로 이동
             navigation.navigate("MainTab");
           } else {
+            // 새로운 유저인 경우 회원가입 화면으로 이동
             navigation.navigate("Agree", { email });
           }
         })
@@ -56,14 +59,18 @@ export default ({ navigation }) => {
 
   useEffect(() => {
     fetchData();
+
+    // 딥링크 이벤트 리스너 등록
     const linkingListener = Linking.addListener("url", handleOpenURL);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       linkingListener.remove();
     };
   }, []);
 
+  // 인증 URL을 여는 함수
   const openAuthUri = () => {
-    console.log("현재 authUri 값:", authUri);
     if (authUri) {
       Linking.openURL(authUri);
     } else {
