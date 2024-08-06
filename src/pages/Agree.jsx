@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Alert,
   Image,
@@ -7,31 +7,31 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { COLOR } from '../styles/color';
-import { Button } from '../components/common/button';
-import AgreeModal from '../components/Account/AgreeModal';
-import useLocation from '../hooks/useLocation';
-import place from '../assets/icons/placeIcon.png';
-import camera from '../assets/icons/cameraIcon.png';
-import notificationIcon from '../assets/icons/notificationIcon.png';
-import useCamera from '../hooks/useCamera';
-import useNotification from '../hooks/useNotification';
-import checkOn from '../assets/icons/checkOn.png';
-import checkOff from '../assets/icons/checkOff.png';
+} from "react-native";
+import { COLOR } from "../styles/color";
+import { Button } from "../components/common/button";
+import AgreeModal from "../components/Account/AgreeModal";
+import useLocation from "../hooks/useLocation";
+import place from "../assets/icons/placeIcon.png";
+import camera from "../assets/icons/cameraIcon.png";
+import notificationIcon from "../assets/icons/notificationIcon.png";
+import useCamera from "../hooks/useCamera";
+import useNotification from "../hooks/useNotification";
+import checkOn from "../assets/icons/checkOn.png";
+import checkOff from "../assets/icons/checkOff.png";
 
 const PermissionContent = ({ onPress, image, title, contents, isAgree }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+      style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
     >
       <Image source={image} style={{ width: 30, height: 30 }} />
       <View style={{ gap: 4, flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{title}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <Text style={{ fontSize: 17, fontWeight: "bold" }}>{title}</Text>
           <Text
-            style={{ fontSize: 13, fontWeight: 'regular', color: '#FB8A8A' }}
+            style={{ fontSize: 13, fontWeight: "regular", color: "#FB8A8A" }}
           >
             (필수)
           </Text>
@@ -39,7 +39,7 @@ const PermissionContent = ({ onPress, image, title, contents, isAgree }) => {
         <Text
           style={{
             fontSize: 13,
-            fontWeight: 'regular',
+            fontWeight: "regular",
             color: COLOR.GRAY_200,
           }}
         >
@@ -74,16 +74,16 @@ const Agree = ({ navigation }) => {
     if (allPermissionsGranted) {
       setIsVisible(true);
     } else {
-      Alert.alert('계속하려면 모든 권한을 허용해야합니다.');
+      Alert.alert("계속하려면 모든 권한을 허용해야합니다.");
     }
   };
 
   const onPressLocationButton = async () => {
     await getLocation();
     if (locationErrorMsg) {
-      Alert.alert('Error', locationErrorMsg);
+      Alert.alert("Error", locationErrorMsg);
     } else if (location) {
-      Alert.alert('성공', '위치 권한 설정이 완료되었습니다.');
+      Alert.alert("성공", "위치 권한 설정이 완료되었습니다.");
       setLocationAgree(true);
     }
   };
@@ -91,7 +91,7 @@ const Agree = ({ navigation }) => {
   const onPressCameraButton = async () => {
     await handlePermissions();
     if (cameraErrorMsg) {
-      Alert.alert('오류!', cameraErrorMsg);
+      Alert.alert("오류!", cameraErrorMsg);
     } else {
       setCameraAgree(true);
     }
@@ -100,10 +100,10 @@ const Agree = ({ navigation }) => {
   const onPressNotificationButton = async () => {
     const token = await registerForPushNotificationsAsync();
     if (token) {
-      Alert.alert('푸시 알림', '권한 허용!');
+      Alert.alert("푸시 알림", "권한 허용!");
       setNotificationAgree(true);
     } else {
-      Alert.alert('오류!', notificationErrorMsg);
+      Alert.alert("오류!", notificationErrorMsg);
     }
   };
 
@@ -116,10 +116,10 @@ const Agree = ({ navigation }) => {
       />
       <View style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 34, paddingTop: 66, gap: 14 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 30 }}>약관 동의</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 30 }}>약관 동의</Text>
           <View style={{ gap: 2 }}>
             <Text style={{ color: COLOR.GRAY_200, fontSize: 17 }}>
-              힉힉호무리를 사용하기 위해서는
+              일단나와를 사용하기 위해서는
             </Text>
             <Text style={{ color: COLOR.GRAY_200, fontSize: 17 }}>
               다음 권한이 필요해요.
@@ -127,33 +127,35 @@ const Agree = ({ navigation }) => {
           </View>
         </View>
       </View>
-      <View style={{ flex: 1, paddingHorizontal: 34, gap: 37 }}>
+      <View
+        style={{ flex: 1, paddingHorizontal: 34, gap: 37, marginBottom: 289 }}
+      >
         <PermissionContent
           onPress={onPressLocationButton}
           image={place}
-          title={'위치'}
-          contents={'내 위치를 통해 주변 지역 정보를 찾기 위해 필요해요.'}
+          title={"위치"}
+          contents={"내 위치를 통해 주변 지역 정보를 찾기 위해 필요해요."}
           isAgree={locationAgree}
         />
         <PermissionContent
           onPress={onPressCameraButton}
           image={camera}
-          title={'카메라'}
-          contents={'인증 사진을 찍기 위해 필요해요.'}
+          title={"카메라"}
+          contents={"인증 사진을 찍기 위해 필요해요."}
           isAgree={cameraAgree}
         />
         <PermissionContent
           onPress={onPressNotificationButton}
           image={notificationIcon}
-          title={'알림'}
-          contents={'하루에 한 번씩 외출 알림을 위해 필요해요.'}
+          title={"알림"}
+          contents={"하루에 한 번씩 외출 알림을 위해 필요해요."}
           isAgree={notificationAgree}
         />
       </View>
       <View style={{ paddingHorizontal: 34, paddingVertical: 10 }}>
         <Button
           onPress={onPressNextButton}
-          text={'다음'}
+          text={"다음"}
           bgColor={allPermissionsGranted ? COLOR.BLUE_400 : COLOR.GRAY_400}
           color={COLOR.WHITE}
           disabled={!allPermissionsGranted}
