@@ -48,10 +48,9 @@ export default ({ navigation }) => {
 
         setHasCertifiedToday(visitDates.includes(today));
 
-        // 주석 처리하여 NoMapView 조건부 렌더링 비활성화
         if (visitDates.includes(today)) {
-          setMapVisible(true); // 카메라 모달 고치면 false로!
-          fetchSpots(); // 이것도 없애고
+          setMapVisible(false);
+          fetchSpots();
         } else {
           fetchSpots();
         }
@@ -160,7 +159,7 @@ export default ({ navigation }) => {
 
   useEffect(() => {
     if (certified) {
-      setMapVisible(false); // false로 수정해야힘 : 인증했으면 NoMapView로 막기
+      setMapVisible(false);
     }
   }, [certified]);
 
