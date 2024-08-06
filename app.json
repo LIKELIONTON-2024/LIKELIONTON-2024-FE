@@ -3,6 +3,8 @@
     "name": "hikikomori",
     "slug": "hikikomori",
     "version": "1.0.0",
+    "scheme": "exp",
+    "platforms": ["ios", "android"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

@@ -19,11 +19,10 @@ import { COLOR } from "../styles/color";
 import { Margin } from "../components/common/Margin";
 import backButton from "../assets/icons/backButtonIcon.png";
 import search from "../assets/icons/searchIcon.png";
-import { BaseURL, signupURL } from "../apis/api";
-
-const accessToken = "google_login_accessToken";
 
 const SignUp = ({ navigation }) => {
+  const BaseURL =
+    "http://ec2-43-203-224-22.ap-northeast-2.compute.amazonaws.com:8080";
   const [nickname, setNickname] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -57,17 +56,19 @@ const SignUp = ({ navigation }) => {
   }, []);
 
   const postData = async () => {
+    const email = await AsyncStorage.getItem("email");
+
     const data = {
-      email: "lim@gmail.com",
+      email: JSON.parse(email),
       nickname,
       address: zipCode,
     };
 
     try {
-      const response = await axios.post(signupURL, data, {
+      const postURL = `${BaseURL}/user/join`;
+      const response = await axios.post(postURL, data, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -77,7 +78,6 @@ const SignUp = ({ navigation }) => {
         const { accessToken, refreshToken } = response.data;
         await AsyncStorage.setItem("accessToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
-        console.log("토큰이 저장되었습니다.");
         navigation.navigate("SplashLogin");
       }
     } catch (error) {

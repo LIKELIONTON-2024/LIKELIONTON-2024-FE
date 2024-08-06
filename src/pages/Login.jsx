@@ -1,88 +1,75 @@
-
-import { Image, Linking, SafeAreaView, Text, View, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { Button } from '../components/common/button';
-import axios from 'axios';
-import kakaoIcon from '../assets/icons/kakaoIcon.png';
-import googleIcon from '../assets/icons/googleIcon.png';
-import naverIcon from '../assets/icons/naverIcon.png';
-import { COLOR } from '../styles/color';
-import { BaseURL } from '../apis/api';
-import logoImage from '../assets/images/logo.png';
+import React, { useEffect } from "react";
+import { Image, Linking, SafeAreaView, View, Alert } from "react-native";
+import { Button } from "../components/common/button";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import kakaoIcon from "../assets/icons/kakaoIcon.png";
+import googleIcon from "../assets/icons/googleIcon.png";
+import naverIcon from "../assets/icons/naverIcon.png";
+import { COLOR } from "../styles/color";
+import logoImage from "../assets/images/logo.png";
+import { BaseURL } from "../apis/api";
 
 export default ({ navigation }) => {
-  const [authUri, setAuthUri] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // 데이터를 가져오는 함수
-  const fetchData = async () => {
-    setLoading(true);
+  const handleGoogleLogin = async () => {
     try {
       const response = await axios.get(`${BaseURL}/oauth2/google/login`);
-      setAuthUri(response.data.authUri);
-    } catch (err) {
-
-      setError('인증 URL을 가져오는 중 오류가 발생했습니다.');
-      console.error('Error fetching data:', err);
-      Alert.alert('오류', '인증 URL을 가져오는 중 문제가 발생했습니다.');
-    } finally {
-      setLoading(false);
+      const GOOGLE_URL = response.data;
+      Linking.openURL(GOOGLE_URL);
+    } catch (error) {
+      console.log("Error during Google login:", error);
     }
   };
 
-  // 딥링크 처리 함수
-  const handleOpenURL = (event) => {
-    const { url } = event;
-    const codeMatch = url.match(/code=([^&]*)/);
+  const handleDeepLink = async (event) => {
+    const url = event.url;
+    const params = new URLSearchParams(url.split("?")[1]);
+    const code = params.get("code");
 
-    if (codeMatch) {
-      const code = codeMatch[1];
+    if (code) {
+      try {
+        await getUserProfile(code);
+      } catch (error) {
+        console.log("Error fetching user profile:", error);
+      }
+    }
+  };
 
-      // 백엔드로 인가 코드를 전달하여 사용자 정보 확인
-      axios
-        .get(`${BaseURL}/oauth2/google/user?code=${code}`)
-        .then((response) => {
-          const { isJoined, email } = response.data;
-          if (isJoined) {
-            // 이미 가입된 유저인 경우 메인 화면으로 이동
+  const getUserProfile = async (code) => {
+    try {
+      const response = await axios.get(
+        `${BaseURL}/oauth2/google/user?code=${code}`
+      );
+      const { isJoined, email } = response.data;
 
-            navigation.navigate('MainTab');
-          } else {
-            // 새로운 유저인 경우 회원가입 화면으로 이동
-            navigation.navigate('Agree', { email });
-          }
-        })
-        .catch((error) => {
-          console.error('Error during OAuth callback handling:', error);
-          Alert.alert('오류', '로그인 처리 중 문제가 발생했습니다.');
-        });
+      await AsyncStorage.setItem("email", JSON.stringify(email));
+
+      if (isJoined) {
+        navigation.navigate("MainTab");
+        const { accessToken, refreshToken } = response.data;
+        await AsyncStorage.setItem("accessToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
+      } else {
+        navigation.navigate("Agree");
+      }
+    } catch (error) {
+      console.log("Error fetching user profile:", error);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleDeepLink({ url });
+      }
+    });
+    // 새로운 URL 이벤트 리스너 추가
+    const linkingListener = Linking.addEventListener("url", handleDeepLink);
 
-    // 딥링크 이벤트 리스너 등록
-
-    const linkingListener = Linking.addListener('url', handleOpenURL);
-
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       linkingListener.remove();
     };
   }, []);
-
-  // 인증 URL을 여는 함수
-  const openAuthUri = () => {
-    if (authUri) {
-      Linking.openURL(authUri);
-    } else {
-
-      console.log('인증 URL이 없습니다.');
-      Alert.alert('오류', '인증 URL을 가져오는 중 문제가 발생했습니다.');
-    }
-  };
 
   return (
     <SafeAreaView
@@ -123,13 +110,10 @@ export default ({ navigation }) => {
           text={"네이버로 계속하기"}
         />
         <Button
-          onPress={openAuthUri}
+          onPress={handleGoogleLogin}
           icon={googleIcon}
           bgColor={COLOR.GRAY_100}
-
-          text={'구글로 계속하기'}
-          loading={loading}
-          disabled={loading}
+          text={"구글로 계속하기"}
         />
       </View>
     </SafeAreaView>

@@ -39,10 +39,6 @@ const MyPageScreen = () => {
         },
       });
 
-      // console.log("응답 상태:", response.status);
-      // console.log("응답 헤더:", response.headers);
-      // console.log("응답 본문:", response.data);
-
       setData(response.data);
     } catch (error) {
       console.error("요청 오류:", error.message);
