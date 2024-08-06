@@ -128,7 +128,7 @@ const Agree = ({ navigation }) => {
         </View>
       </View>
       <View
-        style={{ flex: 1, paddingHorizontal: 34, gap: 37, marginBottom: 289 }}
+        style={{ flex: 1, paddingHorizontal: 28, gap: 37, marginBottom: 289 }}
       >
         <PermissionContent
           onPress={onPressLocationButton}
