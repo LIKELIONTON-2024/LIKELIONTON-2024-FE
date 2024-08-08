@@ -16,7 +16,7 @@
 
 |                                        메인 기능                                       |
 | :--------------------------------------------------------------------------------------------------: |
-| <img width="33%" alt="로그인 회원가입 화면 gif" src="https://github.com/LIKELIONTON-2024/LIKELIONTON-2024-FE/blob/main/src/assets/1.png?raw=true"/>  <img width="33%" alt="홈 화면 gif" src="https://github.com/LIKELIONTON-2024/LIKELIONTON-2024-FE/blob/main/src/assets/2.png?raw=true"/>  <img width="33%" alt="출근기록 gif" src="https://github.com/LIKELIONTON-2024/LIKELIONTON-2024-FE/blob/main/src/assets/3.png?raw=true"/> |
+| <img width="20%" alt="로그인 회원가입 화면 gif" src="https://github.com/LIKELIONTON-2024/LIKELIONTON-2024-FE/blob/main/src/assets/1.png?raw=true"/>  <img width="20%" alt="홈 화면 gif" src="https://github.com/LIKELIONTON-2024/LIKELIONTON-2024-FE/blob/main/src/assets/2.png?raw=true"/>  <img width="20%" alt="출근기록 gif" src="https://github.com/LIKELIONTON-2024/LIKELIONTON-2024-FE/blob/main/src/assets/3.png?raw=true"/> |
 
 |                                                  리워드 보상 및 컨텐츠                                                  |                                                  소셜 기능                                               |
 | :--------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: |
